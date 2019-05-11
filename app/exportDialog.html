@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <!--
+        /**
+        * TimeCode-Magiks - functions to manipulate timecodes and EDLs
+        * Copyright © 2015-2019 John Wellesz
+        *
+        *   This program is free software: you can redistribute it and/or modify
+        *   it under the terms of the GNU General Public License as published by
+        *   the Free Software Foundation, either version 3 of the License, or
+        *   (at your option) any later version.
+        *
+        *   This program is distributed in the hope that it will be useful,
+        *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+        *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        *   GNU General Public License for more details.
+        *
+        *   You should have received a copy of the GNU General Public License
+        *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+        *
+        */
+    -->
+    <head>
+        <base target="_top">
+        <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+        <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+    </head>
+    <body>
+        <!-- Below is the HTML code that defines the exportDialog element structure. -->
+        <div>
+            <p>Export an EDL specifying a range from your current spreadSheet</p>
+            <p class="warning">WARNING: This is an experimental feature.<br />
+            For now it's only possible to create an EDL using a list of in, out timecodes and a comment column... (3 columns and Y rows).<br />
+            Note that only the first column needs to contain data.</p>
+            <div class="block" id="exportDialog-elements">
+
+
+
+                <label for="exportDialog-action-range">
+                    Specify the 3 by Y range to create the EDL from <i>(example: A6:C15)</i>:
+                </label>
+                <BR />
+                <input type="text" class="width-30" id="exportDialog-action-range" />
+                <BR />
+
+                <label for="exportDialog-action-title">
+                    Specify a title: <i>(optional)</i>
+                </label>
+                <input type="text" class="width-100" id="exportDialog-action-title" />
+                <BR />
+
+                <label for="exportDialog-action-textarea">
+                    Get your EDL from below:
+                </label>
+                <textarea class="width-100" id="exportDialog-action-textarea"></textarea>
+
+                <label for="exportDialog-action-keepComments">
+                    EDL Frame rate:
+                </label>
+                <input type="number" id="exportDialog-action-frameRate" />
+                <div id="exportDialog-info-version" class="unimportantInfo"></div>
+            </div>
+            <div class="block" id="exportDialog-button-bar">
+                <button class="action" id="exportDialog-execute-button">Execute</button>
+                <button id="exportDialog-cancel-button" onclick="google.script.host.close()">Quit</button>
+            </div>
+            <div id="exportDialog-status"></div>
+        </div>
+
+        <!-- Use a templated HTML printing scriptlet to import JavaScript. -->
+        <?!= HtmlService.createHtmlOutputFromFile('exportDialogJavaScript').getContent(); ?>
+    </body>
+</html>

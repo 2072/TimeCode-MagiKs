@@ -1,0 +1,25 @@
+{
+  "name": "timecodemagiks",
+  "version": "1.0.0",
+  "description": "Provides timecode conversion tools for Spreadheets",
+  "main": "app/tc.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:2072/TimeCode-MagiKs.git"
+  },
+  "keywords": [
+    "timecode",
+    "frame",
+    "EDL",
+    "Spreadsheet"
+  ],
+  "author": "John Wellesz",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://www.2072productions.com/to/TimecodeMagiks.txt",
+  "dependencies": {
+    "jasmine-node": "^1.14.5"
+  }
+}

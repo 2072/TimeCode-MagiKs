@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <!--
+        /**
+        * TimeCode-Magiks - functions to manipulate timecodes and EDLs
+        * Copyright © 2015-2019 John Wellesz
+        *
+        *   This program is free software: you can redistribute it and/or modify
+        *   it under the terms of the GNU General Public License as published by
+        *   the Free Software Foundation, either version 3 of the License, or
+        *   (at your option) any later version.
+        *
+        *   This program is distributed in the hope that it will be useful,
+        *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+        *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        *   GNU General Public License for more details.
+        *
+        *   You should have received a copy of the GNU General Public License
+        *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+        *
+        */
+    -->
+    <head>
+        <base target="_top">
+        <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
+        <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
+    </head>
+    <body>
+        <!-- Below is the HTML code that defines the importDialog element structure. -->
+        <div>
+            <p>Import an EDL in your current spread sheet</p>
+            <p class="warning">WARNING: This will clear the first 8 columns of your current sheet starting from line 3</p>
+            <div class="block" id="importDialog-elements">
+                <!--
+                    <label for="importDialog-action-select">
+                    Select an action to perfom:
+                    </label>
+                    <select class="width-100" id="importDialog-action-select">
+                    <option value="create">Create a new Sheet</option>
+                    <option value="copy">Copy the current Sheet</option>
+                    <option value="clear">Clear the current Sheet</option>
+                    </select>
+                -->
+                <label for="importDialog-action-textarea">
+                    Past your EDL below (including source mapping if present):
+                </label>
+                <textarea class="width-100" id="importDialog-action-textarea"></textarea>
+                <label for="importDialog-action-keepComments">
+                    Keep coments in EDL?
+                </label>
+                <input type="checkbox" id="importDialog-action-keepComments" />
+                <br />
+                <label for="importDialog-action-ResolveMarkerEDL">
+                    Create report from a Resolve marker export?
+                </label>
+                <input type="checkbox" id="importDialog-action-ResolveMarkerEDL" />
+                <label for="importDialog-action-keepComments">
+                    EDL Frame rate:
+                </label>
+                <input type="number" id="importDialog-action-frameRate" />
+                <div id="importDialog-info-version" class="unimportantInfo"></div>
+            </div>
+            <div class="block" id="importDialog-button-bar">
+                <button class="action" id="importDialog-execute-button">Execute</button>
+                <button id="importDialog-cancel-button" onclick="google.script.host.close()">Quit</button>
+            </div>
+            <div id="importDialog-status"></div>
+        </div>
+
+        <!-- Use a templated HTML printing scriptlet to import JavaScript. -->
+        <?!= HtmlService.createHtmlOutputFromFile('importDialogJavaScript').getContent(); ?>
+    </body>
+</html>

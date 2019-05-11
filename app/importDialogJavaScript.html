@@ -1,0 +1,99 @@
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+  /**
+   * TimeCode-Magiks - functions to manipulate timecodes and EDLs
+   * Copyright © 2015-2019 John Wellesz
+   *
+   *   This program is free software: you can redistribute it and/or modify
+   *   it under the terms of the GNU General Public License as published by
+   *   the Free Software Foundation, either version 3 of the License, or
+   *   (at your option) any later version.
+   *
+   *   This program is distributed in the hope that it will be useful,
+   *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   *   GNU General Public License for more details.
+   *
+   *   You should have received a copy of the GNU General Public License
+   *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+   *
+   */
+
+  /**
+   * Run initializations on importDialog load.
+   */
+  $(function() {
+    // Assign handler functions to importDialog elements here, if needed.
+    $('#importDialog-execute-button').click(onExecuteClick);
+
+    // Call the server here to retrieve any information needed to build
+    // the importDialog, if necessary.
+    google.script.run.withSuccessHandler(function (version) {
+            $('#importDialog-info-version').text(version);
+    }).GETTCMVERSION();
+
+  });
+
+  /**
+   * Calls the server to modify the sheet.
+   * Determines the user-specified action (create a sheet, copy the active
+   * sheet, clear the active sheet) and asks the server to execute it. The
+   * importDialog is then closed.
+   */
+  function onExecuteClick() {
+    this.disabled = true;
+
+    // Gather any information that needs to be sent to the server here.
+    var value = $('#importDialog-action-textarea').val();
+    var keepComments = $('#importDialog-action-keepComments').is(':checked');
+    var ResolveMarkerEDL = $('#importDialog-action-ResolveMarkerEDL').is(':checked');
+    var frameRate = Number($('#importDialog-action-frameRate').val());
+
+    showStatus('Working...');
+
+    if (value === "") {
+        showStatus('There is nothing to import', 'error');
+        this.disabled = false;
+        return;
+    }
+
+    if (!frameRate) {
+        showStatus('You must specify the framerate of the EDL', 'error');
+        this.disabled = false;
+        return;
+    }
+
+    // Send the value to the server and handle the response.
+    google.script.run
+        .withSuccessHandler(
+                function(msg, element) {
+                // Respond to success conditions here.
+                showStatus('Execution successful.');
+                $('#importDialog-action-textarea').val("");
+                element.disabled = false;
+                })
+    .withFailureHandler(
+            function(msg, element) {
+            // Respond to failure conditions here.
+            showStatus('Execution failed: ' + msg, 'error');
+            element.disabled = false;
+            })
+    .withUserObject(this)
+    .appendEDL(value, frameRate, keepComments, ResolveMarkerEDL);
+  }
+
+  /**
+   * Displays the given status message in the importDialog.
+   *
+   * @param {String} msg The status message to display.
+   * @param {String} classId The message type (class id) that the message
+   *   should be displayed as.
+   */
+  function showStatus(msg, classId) {
+    $('#importDialog-status').removeClass().html(msg);
+    if (classId) {
+      $('#importDialog-status').addClass(classId);
+    }
+  }
+
+</script>
