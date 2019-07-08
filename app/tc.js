@@ -26,7 +26,7 @@
 /* jshint -W097 */
 "use strict";
 
-var TCM_VERSION = "v1.1.10"; // can't be a const because of GAS strange limitation...
+var TCM_VERSION = "v1.1.11"; // can't be a const because of GAS strange limitation...
 
 // compat layer with NodeJS
 var Utilities = typeof Utilities === "undefined" ? {} : Utilities;
@@ -94,7 +94,6 @@ function isInputMultiline_(input) {
 /**
  * (private) Throws an error if FPS is invalid
  *
- * @author John Wellesz
  */
 function checkFPS_(fps, allowFrac) {
     if (typeof fps !== 'number')
@@ -110,7 +109,6 @@ function checkFPS_(fps, allowFrac) {
 /**
  * (private) Throws an E_IntegerExpected if v is not an integer
  *
- * @author John Wellesz
  */
 function checkInteger_(v) {
     if (!isInt_(v))
@@ -121,7 +119,6 @@ function checkInteger_(v) {
 /**
  * (private) Throws an error if TC is invalid
  *
- * @author John Wellesz
  */
 var checkTC_ = (function () {
     var validTC = /^((?:[0-9]{1,2}:){0,3}[0-9]{1,2})(?:\s.*)?$/m;
@@ -141,7 +138,6 @@ var checkTC_ = (function () {
  * (private) Parse an integer from a string and return it if nothing was lost
  * in translation else, fail
  *
- * @author John Wellesz
  */
 function parseIntOrFail_(v) {
     const parsed = parseInt(v, 10);
@@ -166,7 +162,6 @@ function round2_(v) {
  * converting each line to an integer and keeping exceptions as strings and
  * finally join everything back to a multiline string.
  *
- * @author John Wellesz
  */
 function recurseOnMultiline_(f, stringArg1, fps, doParseInt) {
     return stringArg1.split('\n').map(keepError_(function (arg1) {
@@ -197,7 +192,6 @@ function recurseOnMultiline3_(f, stringArg1, intArg2, arg3, doParseInt) {
  * (private) assume arrayArg1 is an array ans map f on it while keeping
  * exceptions as strings
  *
- * @author John Wellesz
  */
 function recurseOnArray_(f, arrayArg1, fps) {
     return arrayArg1.map(keepError_(function (arg1) {
@@ -209,7 +203,6 @@ function recurseOnArray_(f, arrayArg1, fps) {
 /**
  * EDL utilities
  *
- * @author John Wellesz
  */
 var EDLUtils_ = (function () {
     var my = {};
@@ -917,7 +910,6 @@ var EDLUtils_ = (function () {
  * @param {24} fps (optional) The frame rate of the provided record timeCode and EDL
  *
  * @customfunction
- * @author John Wellesz
  */
 function EDL_SUMMARY(a_edl, fps) {
     const EVENTN = 0, SOURCE = 1, TRACK = 2, EVENTT = 3, SRCIN = 4, SRCOUT = 5, RECIN = 6, RECOUT = 7;
@@ -1011,7 +1003,6 @@ function EDL_SUMMARY(a_edl, fps) {
  *
  *
  * @customfunction
- * @author John Wellesz
  */
 function TC_MATCHBACK(timeCode, fps, a_edl, offset, ignoreBL) {
 
@@ -1056,7 +1047,6 @@ function TC_MATCHBACK(timeCode, fps, a_edl, offset, ignoreBL) {
  *
  *
  * @customfunction
- * @author John Wellesz
  */
 function TC_REVERSE_MATCHBACK(timeCode, fps, a_edl, offset, ignoreBL) {
 
@@ -1101,7 +1091,6 @@ function TC_REVERSE_MATCHBACK(timeCode, fps, a_edl, offset, ignoreBL) {
  *
  *
  * @customfunction
- * @author John Wellesz
  */
 function TC_SHOT_REVERSE_MATCHBACK(timeCode, fps, a_edl, offset, ignoreBL) {
 
@@ -1139,7 +1128,6 @@ function TC_SHOT_REVERSE_MATCHBACK(timeCode, fps, a_edl, offset, ignoreBL) {
  * @param {function} originalFunction - the function to wrap
  * @return {function} a "modified" function that will return an error message instead of throwing it
  *
- * @author John Wellesz
  */
 function keepError_(originalFunction) {
     return function () {
@@ -1158,7 +1146,6 @@ function keepError_(originalFunction) {
  * @param {number} fps - The frame rate of the timecode to convert (integer expected).
  * @returns {number} - The converted timecode in number of frames
  *
- * @author John Wellesz
  */
 var tcToFrame_ = (function() {
     const max = [0, 59, 59, 23];
@@ -1186,7 +1173,6 @@ var tcToFrame_ = (function() {
  * @returns {number} - The converted timecode in number of frames
  *
  * @customfunction
- * @author John Wellesz
  */
 function TC_TO_FRAME(timeCode, fps) {
     checkFPS_(fps);
@@ -1217,7 +1203,6 @@ function TC_TO_FRAME(timeCode, fps) {
  * @return {string} The time code represantation
  *
  * @customfunction
- * @author John Wellesz
  */
 function FRAME_TO_TC(frameNum, fps) {
     checkFPS_(fps);
@@ -1268,7 +1253,6 @@ function FRAME_TO_TC(frameNum, fps) {
  * @return {string} The duration representation
  *
  * @customfunction
- * @author John Wellesz
  */
 function FRAME_TO_DURATION(frameNum, fps) {
     checkFPS_(fps, true);
@@ -1315,7 +1299,6 @@ function FRAME_TO_DURATION(frameNum, fps) {
  * @return  the converted time code
  *
  * @customfunction
- * @author John Wellesz
  */
 function TC_CONV(timeCode, sFps, dFps) {
     // recurse if array given
@@ -1348,7 +1331,6 @@ function TC_CONV(timeCode, sFps, dFps) {
  * @return {string} the offseted time code
  *
  * @customfunction
- * @author John Wellesz
  */
 function TC_OFFSET(timeCode, offset, fps) {
 
@@ -1383,7 +1365,6 @@ function TC_OFFSET(timeCode, offset, fps) {
  * @return {number} remaining images
  *
  * @customfunction
- * @author John Wellesz
  */
 function IFROMI(value, fps) {
     checkFPS_(fps);
@@ -1410,7 +1391,6 @@ function IFROMI(value, fps) {
  * @return {number} remaining seconds
  *
  * @customfunction
- * @author John Wellesz
  */
 function SFROMI(value, fps) {
 
@@ -1434,7 +1414,6 @@ function SFROMI(value, fps) {
  * @return {number} remaining minutes
  *
  * @customfunction
- * @author John Wellesz
  */
 function MFROMI(value, fps) {
 
@@ -1458,7 +1437,6 @@ function MFROMI(value, fps) {
  * @return {number} remaining images
  *
  * @customfunction
- * @author John Wellesz
  */
 function MFROMIRAW(value, fps) {
 
@@ -1482,7 +1460,6 @@ function MFROMIRAW(value, fps) {
  * @return {number} remaining images
  *
  * @customfunction
- * @author John Wellesz
  */
 function HFROMI(value, fps) {
 
@@ -1504,7 +1481,6 @@ function HFROMI(value, fps) {
  * @return {string} The version
  *
  * @customfunction
- * @author John Wellesz
  */
 function GETTCMVERSION() {
     return TCM_VERSION;
