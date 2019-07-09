@@ -91,9 +91,19 @@ function showExportEDLDialog() {
 }
 
 function openUsageExamplesLink() {
-    var html = '<html><body><H3><a href="https://www.2072productions.com/to/TimeCode-Magiks-examples" target="blank" onclick="google.script.host.close()">click here to open a spreadsheet with usage examples</a></h3><br /><br /><a href="" onclick="google.script.host.close()">close this window</a></body></html>';
-    var ui = HtmlService.createHtmlOutput(html)
-    SpreadsheetApp.getUi().showModelessDialog(ui,"TimeCode-Magiks usage examples");
+    var buttonOpen = '<a href="https://www.2072productions.com/to/TimeCode-Magiks-examples" target="blank" onclick="google.script.host.close()" style="color: #fff;"><button class="action">Open</button></a>';
+    var buttonClose = '<button onclick="google.script.host.close()">Close</button>';
+
+    var text = "Open a spreadsheet with many usage examples and detailed instructions?";
+    var html = '<html><header><link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"></header>'
+        + "<body><center>"
+        + text + "<br /><br />"
+        + '<div class="block form-group" style="margin: 30px;"><div class="inline">'+ buttonOpen + '</div><div class="inline">' + buttonClose + '</div></div>'
+        + "</center></body></html>";
+
+
+    var ui = HtmlService.createHtmlOutput(html).setWidth(450).setHeight(100);
+    SpreadsheetApp.getUi().showModelessDialog(ui,"TimeCode-Magiks Usage Examples");
 }
 
 /**
