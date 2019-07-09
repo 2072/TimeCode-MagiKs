@@ -68,7 +68,7 @@ describe("TC_MagiK base API - FRAME_TO_TC", () => {
         expect(FRAME_TO_TC([["86400\n86401"],["86402\n86403"]], 24)).toEqual([["01:00:00:00\n01:00:00:01"],["01:00:00:02\n01:00:00:03"]]);
 
         expect(FRAME_TO_TC([["86400\n86401"],["86402  654 \n86403 ²garbage"]], 24))
-        .toEqual([["01:00:00:00\n01:00:00:01"],["E_IntegerExpected: Integer expected: '86402  654 ' given\nE_IntegerExpected: Integer expected: '86403 ²garbage' given"]]);
+        .toEqual([["01:00:00:00\n01:00:00:01"],["E_IntegerExpected: Integer expected: '86402  654 ' given\nE_IntegerExpected: Integer expected: '86403 [...] rbage' given"]]);
     });
 
     it("multi array usage with multiline and errors", () => {

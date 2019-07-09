@@ -77,7 +77,7 @@ describe("TC_MagiK base API - FRAME_TO_DURATION", () => {
         expect(FRAME_TO_DURATION([["86400\n86401"],["86402  654 \n86403 ²garbage"]], 24))
         .toEqual([
             ["01h 00m 0s\n"+"01h 00m " + round2_(1/24) + "s"],
-            ["E_IntegerExpected: Integer expected: '86402  654 ' given\nE_IntegerExpected: Integer expected: '86403 ²garbage' given"]
+            ["E_IntegerExpected: Integer expected: '86402  654 ' given\nE_IntegerExpected: Integer expected: '86403 [...] rbage' given"]
         ]);
     });
 

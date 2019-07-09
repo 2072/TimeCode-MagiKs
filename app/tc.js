@@ -77,6 +77,16 @@ function E_NotImplemented(message) {
 E_IntegerExpected.prototype = Object.create(Error.prototype);
 E_IntegerExpected.prototype.constructor = E_NotImplemented;
 
+
+function shortenWrongString(v) {
+    if (typeof v !== 'string')
+        return v;
+    else if (v.length > 12)
+        return v.substring(0,5) + ' [...] ' + v.substring(v.length - 5,v.length);
+    else
+        return v;
+}
+
 /**
  * (private)check if value is an integer
  */
@@ -97,7 +107,7 @@ function isInputMultiline_(input) {
  */
 function checkFPS_(fps, allowFrac) {
     if (typeof fps !== 'number')
-        throw new E_InvalidFPS('fps must be an integer (' + fps + ') given; ' + typeof fps );
+        throw new E_InvalidFPS('fps must be an integer (' + shortenWrongString(fps) + ') given; ' + typeof fps );
 
     if (!isInt_(fps) && allowFrac !== true)
         throw new E_InvalidFPS('fractional fps are not supported yet! (' + fps + ') given');
@@ -112,7 +122,7 @@ function checkFPS_(fps, allowFrac) {
  */
 function checkInteger_(v) {
     if (!isInt_(v))
-        throw new E_IntegerExpected("Integer expected: '" + v + "' of type '" + typeof v + "' given");
+        throw new E_IntegerExpected("Integer expected: '" + shortenWrongString(v) + "' of type '" + typeof v + "' given");
     
 }
 
@@ -127,7 +137,7 @@ var checkTC_ = (function () {
         if (typeof timeCode !== 'string')
             throw new E_InvalidTimeCode('timeCode must be a string. (' + timeCode + ') given');
         else if (!validTC.test(timeCode))
-            throw new E_InvalidTimeCode('"'+timeCode+'" does not seem to be a valid TC.');
+            throw new E_InvalidTimeCode('"'+shortenWrongString(timeCode)+'" does not seem to be a valid TC.');
 
         if (clean === true)
             return timeCode.match(validTC)[1];
@@ -143,7 +153,7 @@ function parseIntOrFail_(v) {
     const parsed = parseInt(v, 10);
 
     if (parsed.toString() !== v)
-        throw new E_IntegerExpected("Integer expected: '" + v + "' given");
+        throw new E_IntegerExpected("Integer expected: '" + shortenWrongString(v) + "' given");
 
     return parsed;
 }
