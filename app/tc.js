@@ -28,7 +28,7 @@
  *  - They shall begin by:
  *      - 'C_' if global to file
  *      - 'c_' if local to a closure
- *  - The second character flowed by another '_' should represent their type:
+ *  - The second character followed by another '_' should represent their type:
  *      - 'i_' for "integer"
  *      - 's_' for string
  *      - 'r_' for regex
@@ -41,7 +41,7 @@
 /* jshint -W097 */
 "use strict";
 
-var TCM_VERSION = "v1.1.11"; // can't be a const because of GAS strange limitation...
+var TCM_VERSION = "v1.1.12dev"; // can't be a const because of GAS strange limitation...
 
 // compat layer with NodeJS
 var Utilities = typeof Utilities === "undefined" ? {} : Utilities;
