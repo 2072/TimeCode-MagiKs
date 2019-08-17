@@ -251,13 +251,14 @@ var EDLUtils_ = (function () {
             function addEvent (eventN, source, track, type, srcIn, srcOut, recIn, recOut, comment) {
                 var edlEvent = [eventN, source, track, type, srcIn, srcOut, recIn, recOut, comment];
 
-                 events[events.length] = edlEvent.map(function(e) {
-                    if (typeof e === "string")
-                        return e;
-                    else if (e || e === 0)
-                        return e.toString();
+                // make sure that known numbers are strings, let other things be for now
+                 events[events.length] = edlEvent.map(function(eventColumn) {
+                    if (typeof eventColumn === "string")
+                        return eventColumn;
+                    else if (eventColumn || eventColumn === 0)
+                        return eventColumn.toString();
                     else
-                        return e;
+                        return eventColumn;
                 });
 
 
@@ -287,14 +288,17 @@ var EDLUtils_ = (function () {
                         else
                             source = source[1];
 
+                        // if an Out is provided use it else just add 1 to the In
                         if (givenData[1])
                             srcOut = checkTC_(givenData[1], true);
                         else
                             srcOut = TC_OFFSET(checkTC_(givenData[0], true), 1, fps);
 
+                        // if there is a comment, make sure it's a string
                         if (givenData[2] && typeof givenData[2] !== "string")
                             givenData[2].toString();
 
+                        // create the event
                         addEvent(eventN, source, "V", "C", srcIn, srcOut, srcIn, srcOut, givenData[2] ? givenData[2] : false);
 
                     } else
@@ -316,6 +320,13 @@ var EDLUtils_ = (function () {
 
             function build() {
 
+                /**
+                 * pad a string on the right or on the left
+                 * @param {String} padchars The characters to use to pad
+                 * @param {String} str The string to be padded
+                 * @param {Integer} length The length of the padding
+                 * @param {Boolean} left True if padding on the left side
+                 */
                 function pad (padchars, str, length, left) {
                     if (left)
                         return (padchars + str).slice(-length);
@@ -329,7 +340,10 @@ var EDLUtils_ = (function () {
                     ""
                 ];
 
+                // the required padding on the events of an EDL
+                // only the event number needs padding with leading zeros
                 var paddings    = [3, 0, 0, 0, 0, 0, 0, 0, 0];
+                // In EDLS data columns are pepended by a certain amount of spaces 
                 var prePaddings = [0, 2, 2, 2, 8, 1, 1, 1, "*"].map(function (padLength, i) {
 
                     if (padLength === 0)
@@ -353,6 +367,7 @@ var EDLUtils_ = (function () {
                 // adjust paddings in events and build lines
                 return headers.join("\n") + events.map(function (event) {
 
+                    // alter all events by prepending and padding them as defined above
                     return event.map(function (e, i) {
 
                         if (i === 8) {
