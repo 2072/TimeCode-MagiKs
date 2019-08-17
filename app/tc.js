@@ -22,6 +22,21 @@
  *
  */
 
+/*
+ * Coding conventions:
+ * - Constants:
+ *  - They shall begin by:
+ *      - 'C_' if global to file
+ *      - 'c_' if local to a closure
+ *  - The second character flowed by another '_' should represent their type:
+ *      - 'i_' for "integer"
+ *      - 's_' for string
+ *      - 'r_' for regex
+ *      - 'f_' for float
+ *  - Are written in uppercase with words separated by '_'
+ */
+
+
 /*jshint esversion: 6 */
 /* jshint -W097 */
 "use strict";
@@ -217,22 +232,21 @@ function recurseOnArray_(f, arrayArg1, fps) {
 var EDLUtils_ = (function () {
     var my = {};
     my.regex = [];
-    const abs = Math.abs;
-    const EVENTN = 0, SOURCE = 1, TRACK = 2, EVENTT = 3, SRCIN = 4, SRCOUT = 5, RECIN = 6, RECOUT = 7, M2SPEED = 8;
+    const c_i_EVENTN = 0, c_i_SOURCE = 1, c_i_TRACK = 2, c_i_EVENTT = 3, c_i_SRCIN = 4, c_i_SRCOUT = 5, c_i_RECIN = 6, c_i_RECOUT = 7, c_i_M2SPEED = 8;
 
-    const header      = /(^\w+:)\s*(.*$)/;
-    const standard    = /\s+/;
-    const resolveMarkerEntry =
+    const c_r_HEADER      = /(^\w+:)\s*(.*$)/;
+    const c_r_STANDARD    = /\s+/;
+    const c_r_RESOLVE_MARKER_ENTRY =
        /(\d+\s+?\d+\s+?V\s+?C\s+?\d\d:\d\d:\d\d:\d\d \d\d:\d\d:\d\d:\d\d \d\d:\d\d:\d\d:\d\d \d\d:\d\d:\d\d:\d\d\s+?)([\s\S]+?\|C:\S+? \|M:.*? \|D:\d+?\s+?)/g;
-    const ResolveMarkers = /^([\s\S]*?)\|C:(\S+?) \|M:(.*?) \|D:(\d+)/g;
-    const comments1   = /^(\*)\s*(.*:)\s+(.*)/;
-    const comments2   = /^(\*)\s*(.*)\s*/;
-    const lines       = /\r\n|\n\r|[\n\r]/;
+    const c_r_RESOLVE_MARKERS = /^([\s\S]*?)\|C:(\S+?) \|M:(.*?) \|D:(\d+)/g;
+    const c_r_COMMENTS1   = /^(\*)\s*(.*:)\s+(.*)/;
+    const c_r_COMMENTS2   = /^(\*)\s*(.*)\s*/;
+    const c_r_LINES       = /\r\n|\n\r|[\n\r]/;
     // pff string.repeat is not availabe in GAS - that's 128 spaces
-    const maxSpacePad = "                "+"                "+"                "+"                "+
-                        "                "+"                "+"                "+"                "+
-                        "                "+"                "+"                "+"                "+
-                        "                "+"                "+"                "+"                ";
+    const c_s_MAX_SPACE_PAD = "                "+"                "+"                "+"                "+
+                              "                "+"                "+"                "+"                "+
+                              "                "+"                "+"                "+"                "+
+                              "                "+"                "+"                "+"                ";
 
     function getEDLbuilder (title, fps) {
 
@@ -241,7 +255,7 @@ var EDLUtils_ = (function () {
 
         checkFPS_(fps);
 
-        const sourceMatch = /\(s: ([^)]+)\)/;
+        const c_r_SOURCEMATCH = /\(s: ([^)]+)\)/;
 
         return (function () {
 
@@ -283,7 +297,7 @@ var EDLUtils_ = (function () {
 
                         srcIn = checkTC_(givenData[0], true);
 
-                        if ((source = givenData[0].match(sourceMatch)) === null)
+                        if ((source = givenData[0].match(c_r_SOURCEMATCH)) === null)
                             source = "MARK";
                         else
                             source = source[1];
@@ -377,7 +391,7 @@ var EDLUtils_ = (function () {
                                 return e;
                         }
 
-                        return prePaddings[i] + pad(i === 0 ? "00000000000000000" : maxSpacePad, e, paddings[i], i === 0);
+                        return prePaddings[i] + pad(i === 0 ? "00000000000000000" : c_s_MAX_SPACE_PAD, e, paddings[i], i === 0);
                     }).reduce(function(a, b) {return a + (b !== false ? b : "");}, "");
 
                 }).join("\n");
@@ -396,20 +410,20 @@ var EDLUtils_ = (function () {
 
         var TIME_CODE_MODULUS_found = false;
 
-        var edlArray = rawEDL.trim().split(lines).map(function(row) {
+        var edlArray = rawEDL.trim().split(c_r_LINES).map(function(row) {
             row = row.trim();
 
             var splitRow;
-            if (row.match(header) !== null) {
-                splitRow = row.split(header);
+            if (row.match(c_r_HEADER) !== null) {
+                splitRow = row.split(c_r_HEADER);
             } else if (row.charAt(0) === "*") {
-                splitRow = row.split(comments1);
+                splitRow = row.split(c_r_COMMENTS1);
 
                 if (splitRow.length === 1)
-                    splitRow = row.split(comments2);
+                    splitRow = row.split(c_r_COMMENTS2);
 
             } else {
-                splitRow = row.split(standard);
+                splitRow = row.split(c_r_STANDARD);
             }
 
             // when using group matching, split likes to add empty strings at end and start...
@@ -417,15 +431,15 @@ var EDLUtils_ = (function () {
                 splitRow.splice(0, 1);
 
             // deal with dissolves
-            if (splitRow[EVENTT] === "D") {
-                splitRow[EVENTT] = "D " + splitRow[EVENTT + 1];
-                splitRow.splice(EVENTT + 1, 1);
+            if (splitRow[c_i_EVENTT] === "D") {
+                splitRow[c_i_EVENTT] = "D " + splitRow[c_i_EVENTT + 1];
+                splitRow.splice(c_i_EVENTT + 1, 1);
             }
 
-            if (!TIME_CODE_MODULUS_found && splitRow[EVENTN] === "TIME_CODE_MODULUS:") {
+            if (!TIME_CODE_MODULUS_found && splitRow[c_i_EVENTN] === "TIME_CODE_MODULUS:") {
                 TIME_CODE_MODULUS_found = true;
 
-                if (fps != splitRow[EVENTN + 1])
+                if (fps != splitRow[c_i_EVENTN + 1])
                     throw new E_InvalidFPS("given FPS is not equal to TIME_CODE_MODULUS header");
             }
 
@@ -438,7 +452,7 @@ var EDLUtils_ = (function () {
             return splitRow;
         }).filter(function(a_row) {
             // keep comments and non empty lines
-            return (a_row[EVENTN].charAt(0) !== "*" || keepComments) && a_row.join("") !== "";
+            return (a_row[c_i_EVENTN].charAt(0) !== "*" || keepComments) && a_row.join("") !== "";
         });
        
         if (!TIME_CODE_MODULUS_found) 
@@ -458,23 +472,23 @@ var EDLUtils_ = (function () {
 
         var MarkersFound = false;
 
-        var edlMarkerArray = rawEDLMarker.split(resolveMarkerEntry).map(function(row) {
+        var edlMarkerArray = rawEDLMarker.split(c_r_RESOLVE_MARKER_ENTRY).map(function(row) {
             row = row.trim();
 
             var splitRow;
 
-            if (row.match(header) !== null) {
-                splitRow = row.split(header).slice(1,2);
-            } else if (row.match(ResolveMarkers) !== null) {
+            if (row.match(c_r_HEADER) !== null) {
+                splitRow = row.split(c_r_HEADER).slice(1,2);
+            } else if (row.match(c_r_RESOLVE_MARKERS) !== null) {
                 // split loves to add empty elements at end and start...
                 if (row.match(/^\|C:/) === null)
-                    splitRow = row.split(ResolveMarkers).slice(1,-1);
+                    splitRow = row.split(c_r_RESOLVE_MARKERS).slice(1,-1);
                 else {
-                    splitRow = row.split(ResolveMarkers).slice(1,-1);
+                    splitRow = row.split(c_r_RESOLVE_MARKERS).slice(1,-1);
                 }
                 MarkersFound = true;
             } else {
-                splitRow = row.split(standard);
+                splitRow = row.split(c_r_STANDARD);
 
                 // [4,5] === [6,7]
                 if (!(splitRow[4] === splitRow[6] && splitRow[5] === splitRow[7]))
@@ -542,7 +556,7 @@ var EDLUtils_ = (function () {
     }
 
     my.rawResolveEDLMarkerToArrays = rawResolveEDLMarkerToArrays;
-    my.regex.resolveMarkerEntry = resolveMarkerEntry;
+    my.regex.c_r_RESOLVE_MARKER_ENTRY = c_r_RESOLVE_MARKER_ENTRY;
 
     // a recursive function to find an M2 associated event (usualy the previous
     // one but in case of dissolves it might not be so)
@@ -550,7 +564,7 @@ var EDLUtils_ = (function () {
         if (lastEventIndex < 0)
             throw new E_InvalidEDL("M2 reference ("+M2TCRef+") not found.");
 
-        if (A_edl[lastEventIndex][SRCIN] === M2TCRef)
+        if (A_edl[lastEventIndex][c_i_SRCIN] === M2TCRef)
             return lastEventIndex;
         else
             return findM2Associate(A_edl, lastEventIndex - 1, M2TCRef);
@@ -558,9 +572,9 @@ var EDLUtils_ = (function () {
 
     function setSRCIN_if_NegM2 (modeA, i, fps) {
         // Fix reverse motion effects source in point but ignore non-events (dissolves in points)
-        if (modeA[i][M2SPEED] !== null && modeA[i][M2SPEED] < 0 && modeA[i][SRCOUT] - modeA[i][SRCIN] > 0) {
-            // SRCIN is wrong on these events (SRCOUT - 1)
-            modeA[i][SRCIN] = (modeA[i][SRCOUT] - ((modeA[i][RECOUT] - modeA[i][RECIN]) * -1 * (modeA[i][M2SPEED] / fps))) | 0;
+        if (modeA[i][c_i_M2SPEED] !== null && modeA[i][c_i_M2SPEED] < 0 && modeA[i][c_i_SRCOUT] - modeA[i][c_i_SRCIN] > 0) {
+            // c_i_SRCIN is wrong on these events (c_i_SRCOUT - 1)
+            modeA[i][c_i_SRCIN] = (modeA[i][c_i_SRCOUT] - ((modeA[i][c_i_RECOUT] - modeA[i][c_i_RECIN]) * -1 * (modeA[i][c_i_M2SPEED] / fps))) | 0;
         }
     }
 
@@ -594,48 +608,48 @@ var EDLUtils_ = (function () {
                 throw new E_InvalidEDL("each EDL row must be [Event#, Source, Track, EventType, TCSourceIn, TCSourceOut, TCRecordIn, TCRecordOut]. type Received: "+ typeof a_row + " num entries: " + (a_row instanceof Array ? a_row.length : "N/A"));
 
             // add a place holder for M2
-            a_row[M2SPEED] = null;
+            a_row[c_i_M2SPEED] = null;
 
             if (!fps) {
-                if (a_row[EVENTN] === "TIME_CODE_MODULUS:") {
-                    fps = a_row[EVENTN + 1] | 0;
+                if (a_row[c_i_EVENTN] === "TIME_CODE_MODULUS:") {
+                    fps = a_row[c_i_EVENTN + 1] | 0;
                     checkFPS_(fps);
-                } else if (a_row[RECOUT] !== "")
+                } else if (a_row[c_i_RECOUT] !== "")
                     throw new E_InvalidFPS("no fps given and no TIME_CODE_MODULUS header found.");
             }
 
             // make sure all sources are strings even if numerical
-            if (typeof a_row[SOURCE] !== "string")
-                a_row[SOURCE] = a_row[SOURCE].toString();
+            if (typeof a_row[c_i_SOURCE] !== "string")
+                a_row[c_i_SOURCE] = a_row[c_i_SOURCE].toString();
 
             // make a list of all sources
-            if (sources.indexOf(a_row[SOURCE]) === -1)
-                sources.push(a_row[SOURCE]);
+            if (sources.indexOf(a_row[c_i_SOURCE]) === -1)
+                sources.push(a_row[c_i_SOURCE]);
 
             // grab the source mapping if present
-            if (!usingClipNames && a_row[EVENTN] === ">>>" && a_row[SOURCE] === "SOURCE")
+            if (!usingClipNames && a_row[c_i_EVENTN] === ">>>" && a_row[c_i_SOURCE] === "SOURCE")
                 sourceMapping[sources.indexOf(a_row[2].toString())] = a_row[3];
 
-            if (a_row[EVENTN] === "*" && (a_row[EVENTN + 1] === "FROM CLIP NAME:" || a_row[EVENTN + 1] === "SOURCE FILE:")) {
+            if (a_row[c_i_EVENTN] === "*" && (a_row[c_i_EVENTN + 1] === "FROM CLIP NAME:" || a_row[c_i_EVENTN + 1] === "SOURCE FILE:")) {
                 usingClipNames = true;
 
                 // we can do this because filter constructs a new array using references to inner arrays of A_edl
-                A_edl[lastEventIndex][SOURCE] = a_row[EVENTN + 2];
+                A_edl[lastEventIndex][c_i_SOURCE] = a_row[c_i_EVENTN + 2];
 
                 // The following would have been nicer but EDL is such messy a
                 // format that we can't rely on unique source IDs...
 
-                //  sourceMapping[sources.indexOf(A_edl[i - 1][SOURCE])] = a_row[EVENTN + 2];
+                //  sourceMapping[sources.indexOf(A_edl[i - 1][c_i_SOURCE])] = a_row[c_i_EVENTN + 2];
             }
 
             // only keep events
-            if (a_row[RECOUT] !== "" && !isNaN(parseInt(a_row[EVENTN], 10))) {
+            if (a_row[c_i_RECOUT] !== "" && !isNaN(parseInt(a_row[c_i_EVENTN], 10))) {
                 lastEventIndex = i;
                 return true;
-            } else if (a_row[EVENTN].trim() === "M2") {
+            } else if (a_row[c_i_EVENTN].trim() === "M2") {
                 hasM2 = true;
                 // we can do this because filter constructs a new array using references to inner arrays of A_edl
-                A_edl[findM2Associate(A_edl, lastEventIndex, a_row[EVENTN + 3])][M2SPEED] = parseFloat(a_row[EVENTN + 2]);
+                A_edl[findM2Associate(A_edl, lastEventIndex, a_row[c_i_EVENTN + 3])][c_i_M2SPEED] = parseFloat(a_row[c_i_EVENTN + 2]);
                 return false;
             } else {
                 return false;
@@ -644,14 +658,14 @@ var EDLUtils_ = (function () {
         }).map(function (a_row) {
 
             return a_row.map(function (cell, col) {
-                if (col === SOURCE && typeof sourceMapping[sources.indexOf(cell)] !== 'undefined')
+                if (col === c_i_SOURCE && typeof sourceMapping[sources.indexOf(cell)] !== 'undefined')
                     return sourceMapping[sources.indexOf(cell)];
-                else if (col >= SRCIN && col < M2SPEED) {
+                else if (col >= c_i_SRCIN && col < c_i_M2SPEED) {
                     try {
                         return tcToFrame_(cell, fps);
                     } catch (e) {
                         if (e instanceof E_InvalidTimeCode)
-                            throw new E_InvalidEDL("event # " + a_row[EVENTN] + ": " + e.toString());
+                            throw new E_InvalidEDL("event # " + a_row[c_i_EVENTN] + ": " + e.toString());
                         else
                             throw e;
                     }
@@ -660,42 +674,42 @@ var EDLUtils_ = (function () {
             });
 
         }).sort(function (a, b) {
-            return a[RECIN] - b[RECIN];
+            return a[c_i_RECIN] - b[c_i_RECIN];
         });
 
 
         a_fpe.forEach(function (_, i, modeA) {
 
-            if (i !== 0 && modeA[i][RECIN] < modeA[i - 1][RECOUT] && modeA[i][EVENTT].charAt(0) !== "D")
+            if (i !== 0 && modeA[i][c_i_RECIN] < modeA[i - 1][c_i_RECOUT] && modeA[i][c_i_EVENTT].charAt(0) !== "D")
                 ++recordOverlapCount;
 
-            if (modeA[i][SRCOUT] - modeA[i][SRCIN] !== modeA[i][RECOUT] - modeA[i][RECIN] && modeA[i][M2SPEED] === null)
-                throw  new E_InvalidEDL("".concat("source length (", modeA[i][SRCOUT] - modeA[i][SRCIN], ") does not match record length (", modeA[i][RECOUT] - modeA[i][RECIN], ")", " on event # ", a_fpe[i][EVENTN], " - check frame rate"));
+            if (modeA[i][c_i_SRCOUT] - modeA[i][c_i_SRCIN] !== modeA[i][c_i_RECOUT] - modeA[i][c_i_RECIN] && modeA[i][c_i_M2SPEED] === null)
+                throw  new E_InvalidEDL("".concat("source length (", modeA[i][c_i_SRCOUT] - modeA[i][c_i_SRCIN], ") does not match record length (", modeA[i][c_i_RECOUT] - modeA[i][c_i_RECIN], ")", " on event # ", a_fpe[i][c_i_EVENTN], " - check frame rate"));
 
 
             // check source duration
-            if (modeA[i][SRCOUT] - modeA[i][SRCIN] < 1) {
+            if (modeA[i][c_i_SRCOUT] - modeA[i][c_i_SRCIN] < 1) {
                 // normal if this is a dissolve
-                if (typeof modeA[i + 1] === "undefined" || modeA[i + 1][EVENTT].charAt(0) !== "D" || modeA[i][SRCOUT] - modeA[i][SRCIN] < 0) {
-                    throw new E_InvalidEDL("invalid length detected on event # " +  modeA[i][EVENTN]);
+                if (typeof modeA[i + 1] === "undefined" || modeA[i + 1][c_i_EVENTT].charAt(0) !== "D" || modeA[i][c_i_SRCOUT] - modeA[i][c_i_SRCIN] < 0) {
+                    throw new E_InvalidEDL("invalid length detected on event # " +  modeA[i][c_i_EVENTN]);
                 } else {
                     // get dissolve duration
-                    var dd = parseInt(modeA[i + 1][EVENTT].substring(2), 10);
+                    var dd = parseInt(modeA[i + 1][c_i_EVENTT].substring(2), 10);
 
                     if (! isInt_(dd))
-                        throw new E_InvalidEDL("invalid dissolve duration (no integer:"+modeA[i + 1][EVENTT]+") on event " +  modeA[i][EVENTN]);
+                        throw new E_InvalidEDL("invalid dissolve duration (no integer:"+modeA[i + 1][c_i_EVENTT]+") on event " +  modeA[i][c_i_EVENTN]);
 
                     // add the dissolve duration to the previous event out points (source and record)
-                    modeA[i - 1][RECOUT] += dd; // always OK
+                    modeA[i - 1][c_i_RECOUT] += dd; // always OK
 
-                    if (modeA[i - 1][M2SPEED] === null) {
-                        modeA[i - 1][SRCOUT] += dd;
-                    } else if (modeA[i - 1][M2SPEED] > 0) {
+                    if (modeA[i - 1][c_i_M2SPEED] === null) {
+                        modeA[i - 1][c_i_SRCOUT] += dd;
+                    } else if (modeA[i - 1][c_i_M2SPEED] > 0) {
                         // adjust the tc out taking the M2's fps into account starting from the in point to avoid imprecision errors
-                        modeA[i - 1][SRCOUT] = modeA[i - 1][SRCIN] + 1 +
-                            ((modeA[i - 1][RECOUT] - modeA[i - 1][RECIN]) * (modeA[i][M2SPEED] / fps)) | 0;
+                        modeA[i - 1][c_i_SRCOUT] = modeA[i - 1][c_i_SRCIN] + 1 +
+                            ((modeA[i - 1][c_i_RECOUT] - modeA[i - 1][c_i_RECIN]) * (modeA[i][c_i_M2SPEED] / fps)) | 0;
 
-                        if (modeA[i - 1][SRCOUT] < modeA[i][SRCOUT])
+                        if (modeA[i - 1][c_i_SRCOUT] < modeA[i][c_i_SRCOUT])
                             throw new Error("Dissolve on M2 adjustment sanity check failure");
                     } else {
                         // we changed rec out so we need to reset srcin when M2 <0
@@ -707,13 +721,13 @@ var EDLUtils_ = (function () {
                     // the dissolve event (i + 1) and cancel out the later.
 
                     // XXX not that simple if dissolve is a <0 M2...
-                    modeA[i + 2][SRCIN] =  modeA[i + 1][SRCIN];
-                    modeA[i + 2][RECIN] =  modeA[i + 1][RECIN];
+                    modeA[i + 2][c_i_SRCIN] =  modeA[i + 1][c_i_SRCIN];
+                    modeA[i + 2][c_i_RECIN] =  modeA[i + 1][c_i_RECIN];
                     // cancel the dissolve sub-event now that its data has been moved
                     // keeping srcIN so M2 references still match (not used for now)
-                    modeA[i + 1][SRCIN]  =  modeA[i + 1][SRCOUT];
-                    modeA[i + 1][RECOUT] =  modeA[i + 1][RECIN];
-                    modeA[i + 1][EVENTN] = false;
+                    modeA[i + 1][c_i_SRCIN]  =  modeA[i + 1][c_i_SRCOUT];
+                    modeA[i + 1][c_i_RECOUT] =  modeA[i + 1][c_i_RECIN];
+                    modeA[i + 1][c_i_EVENTN] = false;
                     */
 
 
@@ -729,12 +743,12 @@ var EDLUtils_ = (function () {
         });
 
         a_fpe.slice().sort(function (a, b) { // We do not keep this sorting
-            return a[SRCIN] - b[SRCIN];
+            return a[c_i_SRCIN] - b[c_i_SRCIN];
         }).forEach(function (_, i, modeC) {
-            if (modeC[i][RECIN] === modeC[i][RECOUT]) // ignore null events
+            if (modeC[i][c_i_RECIN] === modeC[i][c_i_RECOUT]) // ignore null events
                 return;
 
-            if (i !== 0 && modeC[i][SRCIN] < modeC[i - 1][SRCOUT] && modeC[i][SOURCE] !== "BL" && modeC[i - 1][SOURCE] !== "BL") {
+            if (i !== 0 && modeC[i][c_i_SRCIN] < modeC[i - 1][c_i_SRCOUT] && modeC[i][c_i_SOURCE] !== "BL" && modeC[i - 1][c_i_SOURCE] !== "BL") {
                 ++sourceOverlapCount;
             }
         });
@@ -756,10 +770,10 @@ var EDLUtils_ = (function () {
     // matchBacking is finding the source relating to a record, ie finding the source timecode edited at rec_frame
     function matchBackFrame (rec_frame, a_fpe) {
 
-        if (rec_frame < a_fpe[0][RECIN])
+        if (rec_frame < a_fpe[0][c_i_RECIN])
             throw new E_NotFoundInEDL("record TC is located before EDL's first event, TC: " + FRAME_TO_TC(rec_frame, a_fpe.fps));
 
-        if (a_fpe.length !== 0 && rec_frame >= a_fpe[a_fpe.length - 1][RECOUT])
+        if (a_fpe.length !== 0 && rec_frame >= a_fpe[a_fpe.length - 1][c_i_RECOUT])
             throw new E_NotFoundInEDL("record TC out-ran EDL record length, TC: " + FRAME_TO_TC(rec_frame, a_fpe.fps));
 
 
@@ -770,36 +784,36 @@ var EDLUtils_ = (function () {
         matches.sources = sources;
         matches.events = events;
         for (i = 0 ; i < a_fpe.length ; i++) {
-            if ((rec_frame >= a_fpe[i][RECIN] && rec_frame < a_fpe[i][RECOUT]) && (!a_fpe.ignoreBL || a_fpe[i][SOURCE] !== "BL")) {
+            if ((rec_frame >= a_fpe[i][c_i_RECIN] && rec_frame < a_fpe[i][c_i_RECOUT]) && (!a_fpe.ignoreBL || a_fpe[i][c_i_SOURCE] !== "BL")) {
 
-                sources[matches.length] = a_fpe[i][SOURCE];
-                events [matches.length] = a_fpe[i][EVENTN];
+                sources[matches.length] = a_fpe[i][c_i_SOURCE];
+                events [matches.length] = a_fpe[i][c_i_EVENTN];
 
-                if (a_fpe[i][M2SPEED] === null) { // no vary speed
-                    matches[matches.length] = a_fpe[i][SRCIN] + (rec_frame - a_fpe[i][RECIN]);
+                if (a_fpe[i][c_i_M2SPEED] === null) { // no vary speed
+                    matches[matches.length] = a_fpe[i][c_i_SRCIN] + (rec_frame - a_fpe[i][c_i_RECIN]);
                 } else {
                     events [matches.length] = events [matches.length] + " - M2";
 
                     var match = 0;
-                    if (a_fpe[i][M2SPEED] >= 0)
+                    if (a_fpe[i][c_i_M2SPEED] >= 0)
                         // apply speed corrections and truncate to integer (it's what Avid does apparently)
-                        match = a_fpe[i][SRCIN] + (((rec_frame - a_fpe[i][RECIN]) * (a_fpe[i][M2SPEED] / a_fpe.fps)) | 0);
+                        match = a_fpe[i][c_i_SRCIN] + (((rec_frame - a_fpe[i][c_i_RECIN]) * (a_fpe[i][c_i_M2SPEED] / a_fpe.fps)) | 0);
                     else
-                        match = (a_fpe[i][SRCOUT] - 1 + ((rec_frame - a_fpe[i][RECIN]) * (a_fpe[i][M2SPEED] / a_fpe.fps))) | 0;
+                        match = (a_fpe[i][c_i_SRCOUT] - 1 + ((rec_frame - a_fpe[i][c_i_RECIN]) * (a_fpe[i][c_i_M2SPEED] / a_fpe.fps))) | 0;
 
                     // constrive the matched source TC to this event range
-                    if (match >= a_fpe[i][SRCOUT])
-                        match = a_fpe[i][SRCOUT] - 1;
-                    else if (match < a_fpe[i][SRCIN])
-                        match = a_fpe[i][SRCIN];
+                    if (match >= a_fpe[i][c_i_SRCOUT])
+                        match = a_fpe[i][c_i_SRCOUT] - 1;
+                    else if (match < a_fpe[i][c_i_SRCIN])
+                        match = a_fpe[i][c_i_SRCIN];
 
                     matches[matches.length] = match;
 
                 }
             }
 
-            if (rec_frame < a_fpe[i][RECIN]) {
-                if (!matches.length) // since the EDL is sorted by a_fpe[i][RECIN]... (Mode A)
+            if (rec_frame < a_fpe[i][c_i_RECIN]) {
+                if (!matches.length) // since the EDL is sorted by a_fpe[i][c_i_RECIN]... (Mode A)
                     throw new E_NotFoundInEDL("record TC not found in EDL (gap ?), TC: " + FRAME_TO_TC(rec_frame, a_fpe.fps));
                 else
                     break;
@@ -822,36 +836,36 @@ var EDLUtils_ = (function () {
         matches.events = events;
         matches.shotInfos = shotInfos;
         for (i = 0 ; i < a_fpe.length ; i++) {
-            if (source_frame >= a_fpe[i][SRCIN] && source_frame < a_fpe[i][SRCOUT] && (!a_fpe.ignoreBL || a_fpe[i][SOURCE] !== "BL")) {
+            if (source_frame >= a_fpe[i][c_i_SRCIN] && source_frame < a_fpe[i][c_i_SRCOUT] && (!a_fpe.ignoreBL || a_fpe[i][c_i_SOURCE] !== "BL")) {
 
                 // record sources and events
-                sources[matches.length] = a_fpe[i][SOURCE];
-                events [matches.length] = a_fpe[i][EVENTN];
-                shotInfos[matches.length] = [a_fpe[i][RECIN], a_fpe[i][RECOUT] - a_fpe[i][RECIN]];
+                sources[matches.length] = a_fpe[i][c_i_SOURCE];
+                events [matches.length] = a_fpe[i][c_i_EVENTN];
+                shotInfos[matches.length] = [a_fpe[i][c_i_RECIN], a_fpe[i][c_i_RECOUT] - a_fpe[i][c_i_RECIN]];
 
-                if (a_fpe[i][M2SPEED] === null) { // no vary speed
-                    matches[matches.length] = a_fpe[i][RECIN] + (source_frame - a_fpe[i][SRCIN]);
+                if (a_fpe[i][c_i_M2SPEED] === null) { // no vary speed
+                    matches[matches.length] = a_fpe[i][c_i_RECIN] + (source_frame - a_fpe[i][c_i_SRCIN]);
                 } else {
 
                     events [matches.length] += " - M2";
 
                     var match = 0;
-                    if (a_fpe[i][M2SPEED] >= 0)
+                    if (a_fpe[i][c_i_M2SPEED] >= 0)
                         // here we need to round up instead of truncating to be consistent with what Avid does (I'm not sure why...)
-                        match = a_fpe[i][RECIN] + (a_fpe[i][M2SPEED] !== 0 ?
-                                Math.round((source_frame - a_fpe[i][SRCIN]) * (a_fpe.fps / a_fpe[i][M2SPEED]))|0
+                        match = a_fpe[i][c_i_RECIN] + (a_fpe[i][c_i_M2SPEED] !== 0 ?
+                                Math.round((source_frame - a_fpe[i][c_i_SRCIN]) * (a_fpe.fps / a_fpe[i][c_i_M2SPEED]))|0
                                 : 0);
                     else
                         // we must approach the rec tc from the left to get the first image and not the last (if it's a slow motion)
-                        match = a_fpe[i][RECOUT] - 1 -
-                                (Math.round(  (source_frame - a_fpe[i][SRCIN]) * -1 * (a_fpe.fps / a_fpe[i][M2SPEED]) +0.5 ));
-                                //(Math.round((a_fpe[i][SRCOUT] - 1 - source_frame) * -1 * (a_fpe.fps / a_fpe[i][M2SPEED])));
+                        match = a_fpe[i][c_i_RECOUT] - 1 -
+                                (Math.round(  (source_frame - a_fpe[i][c_i_SRCIN]) * -1 * (a_fpe.fps / a_fpe[i][c_i_M2SPEED]) +0.5 ));
+                                //(Math.round((a_fpe[i][c_i_SRCOUT] - 1 - source_frame) * -1 * (a_fpe.fps / a_fpe[i][c_i_M2SPEED])));
 
                     // constrive the matched record TC to this event range
-                    if (match >= a_fpe[i][RECOUT])
-                        match = a_fpe[i][RECOUT] - 1;
-                    else if (match < a_fpe[i][RECIN])
-                        match = a_fpe[i][RECIN];
+                    if (match >= a_fpe[i][c_i_RECOUT])
+                        match = a_fpe[i][c_i_RECOUT] - 1;
+                    else if (match < a_fpe[i][c_i_RECIN])
+                        match = a_fpe[i][c_i_RECIN];
 
                     matches[matches.length] = match;
 
@@ -937,12 +951,12 @@ var EDLUtils_ = (function () {
  * @customfunction
  */
 function EDL_SUMMARY(a_edl, fps) {
-    const EVENTN = 0, SOURCE = 1, TRACK = 2, EVENTT = 3, SRCIN = 4, SRCOUT = 5, RECIN = 6, RECOUT = 7;
+    const c_i_EVENTN = 0, c_i_SOURCE = 1, c_i_TRACK = 2, c_i_EVENTT = 3, c_i_SRCIN = 4, c_i_SRCOUT = 5, c_i_RECIN = 6, c_i_RECOUT = 7;
 
     var parsed_edl = EDLUtils_.parseEDL(a_edl, fps);
 
-    var sourceEditLength = parsed_edl.reduce(function (currentL, a_row) {return currentL + (a_row[SOURCE] !== "BL" ? (a_row[SRCOUT] - a_row[SRCIN]) : 0);}, 0);
-    var editLength = parsed_edl.length ? parsed_edl[parsed_edl.length - 1][RECOUT] - parsed_edl[0][RECIN] : 0;
+    var sourceEditLength = parsed_edl.reduce(function (currentL, a_row) {return currentL + (a_row[c_i_SOURCE] !== "BL" ? (a_row[c_i_SRCOUT] - a_row[c_i_SRCIN]) : 0);}, 0);
+    var editLength = parsed_edl.length ? parsed_edl[parsed_edl.length - 1][c_i_RECOUT] - parsed_edl[0][c_i_RECIN] : 0;
 
     var sourcesLength = [];
     var sourcesName = [];
@@ -952,17 +966,17 @@ function EDL_SUMMARY(a_edl, fps) {
 
     parsed_edl.forEach(function (a_row) {
 
-        if (a_row[EVENTN] > maxEventNum)
-            maxEventNum = a_row[EVENTN];
+        if (a_row[c_i_EVENTN] > maxEventNum)
+            maxEventNum = a_row[c_i_EVENTN];
 
-        var srcName = a_row[SOURCE].toString();
+        var srcName = a_row[c_i_SOURCE].toString();
 
         if (sourcesName.indexOf(srcName) === -1) {
             sourcesName.push(srcName);
             sourcesLength[sourcesName.indexOf(srcName)] = 0;
         }
 
-        sourcesLength[sourcesName.indexOf(srcName)] += a_row[SRCOUT] - a_row[SRCIN];
+        sourcesLength[sourcesName.indexOf(srcName)] += a_row[c_i_SRCOUT] - a_row[c_i_SRCIN];
 
     });
 
@@ -976,24 +990,24 @@ function EDL_SUMMARY(a_edl, fps) {
     parsed_edl.slice()
         .sort(
                 function (a, b) {
-                    if (a[SOURCE] === b[SOURCE])
-                        return a[SRCIN] - b[SRCIN];
+                    if (a[c_i_SOURCE] === b[c_i_SOURCE])
+                        return a[c_i_SRCIN] - b[c_i_SRCIN];
                     else
-                        return a[SOURCE] < b[SOURCE] ? -1 : +(a[SOURCE] > b[SOURCE]);
+                        return a[c_i_SOURCE] < b[c_i_SOURCE] ? -1 : +(a[c_i_SOURCE] > b[c_i_SOURCE]);
                 }
              )
         .forEach(function (_, i, modeC) {
-            if (modeC[i][RECIN] === modeC[i][RECOUT]) // ignore null events
+            if (modeC[i][c_i_RECIN] === modeC[i][c_i_RECOUT]) // ignore null events
                 return;
 
-            if (i !== 0 && modeC[i][SRCIN] < modeC[i - 1][SRCOUT] && modeC[i][SOURCE] !== "BL" && modeC[i - 1][SOURCE] !== "BL" && modeC[i][SOURCE] === modeC[i - 1][SOURCE]) {
+            if (i !== 0 && modeC[i][c_i_SRCIN] < modeC[i - 1][c_i_SRCOUT] && modeC[i][c_i_SOURCE] !== "BL" && modeC[i - 1][c_i_SOURCE] !== "BL" && modeC[i][c_i_SOURCE] === modeC[i - 1][c_i_SOURCE]) {
 
                 for (var j = i -1 ; j <= i ; j++)
                     dupes.push([
-                        modeC[j][EVENTN], modeC[j][SOURCE], keepError_(FRAME_TO_TC)(modeC[j][SRCIN], parsed_edl.fps), keepError_(FRAME_TO_TC)(modeC[j][SRCOUT], parsed_edl.fps), keepError_(FRAME_TO_TC)(modeC[j][RECIN], parsed_edl.fps)
+                        modeC[j][c_i_EVENTN], modeC[j][c_i_SOURCE], keepError_(FRAME_TO_TC)(modeC[j][c_i_SRCIN], parsed_edl.fps), keepError_(FRAME_TO_TC)(modeC[j][c_i_SRCOUT], parsed_edl.fps), keepError_(FRAME_TO_TC)(modeC[j][c_i_RECIN], parsed_edl.fps)
                     ]);
 
-                duppedFrameNumber += modeC[i - 1][SRCOUT] - modeC[i][SRCIN];
+                duppedFrameNumber += modeC[i - 1][c_i_SRCOUT] - modeC[i][c_i_SRCIN];
             }
         });
 

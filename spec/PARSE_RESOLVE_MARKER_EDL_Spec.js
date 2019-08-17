@@ -53,13 +53,13 @@ Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider
 
      it("'s internal regex works", () => {
 
-         var splitResult = rawExample.split(EDLUtils_.regex.resolveMarkerEntry);
+         var splitResult = rawExample.split(EDLUtils_.regex.c_r_RESOLVE_MARKER_ENTRY);
 
         expect(splitResult[1]).toMatch(/001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07\s+/);
         expect(splitResult[2]).toMatch(/Poil noire gauche cadre sur visage acteur \|C:ResolveColorYellow \|M:Marker 1 \|D:1\s+/);
         expect(splitResult[splitResult.length-2]).toMatch(/^\s+Tache claire en haut a gauche et en bas/);
         expect(splitResult[splitResult.length-3]).toMatch(/^009  001      V     C        01:21:45:04 01:21:45:05 01:21:45:04 01:21:45:05/);
-//        expect(rawExample.split(resolveMarkerEntry)).toEqual([]);
+//        expect(rawExample.split(c_r_RESOLVE_MARKER_ENTRY)).toEqual([]);
     });
 
     function _rawResolveEDLMarkerToArrays(a,b){
