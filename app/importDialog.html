@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
     <!--
         /**
         * TimeCode-Magiks - functions to manipulate timecodes and EDLs
@@ -20,16 +22,16 @@
         *
         */
     -->
-    <head>
         <base target="_top">
+        <title>EDL Import</title>
         <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
         <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
     </head>
     <body>
         <!-- Below is the HTML code that defines the importDialog element structure. -->
         <div>
-            <p>Import an EDL in your current spread sheet</p>
-            <p class="warning">WARNING: This will clear the first 8 columns of your current sheet starting from line 3</p>
+            <p>Import an EDL in your current spread sheet
+            <p class="warning">WARNING: This will clear the first 8 columns of your current sheet starting from line 3
             <div class="block" id="importDialog-elements">
                 <!--
                     <label for="importDialog-action-select">

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
     <!--
         /**
         * TimeCode-Magiks - functions to manipulate timecodes and EDLs
@@ -20,8 +22,8 @@
         *
         */
     -->
-    <head>
-        <base target="_top">
+        <base target="_top" />
+        <title>EDL Export</title>
         <!-- Use a templated HTML printing scriptlet to import common stylesheet -->
         <?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>
     </head>
@@ -29,12 +31,14 @@
         <!-- Below is the HTML code that defines the exportDialog element structure. -->
         <div>
             <p>Export an EDL specifying a range from your current spreadSheet.
-            </p>
 
-            <p>Two ways to export an EDL:<ul>
+            <p>There are two ways to export an EDL:
+            <ul>
                 <li>Create a standard EDL using 8 columns.</li>
-                <li>Create an EDL using a list of <b>In</b>, <b>Out</b> timecodes and a <b>Comment</b> column.<br /><i class="unimportantInfo">3 columns and Y rows, where only the first column needs to be filled.</i></li>
-            </ul></p>
+                <li>Create an EDL using a list of <b>In</b>, <b>Out</b> timecodes and a <b>Comment</b> column.<br />
+                    <i class="unimportantInfo">3 columns and Y rows, where only the first column needs to be filled.</i></li>
+            </ul>
+            
             <div class="block" id="exportDialog-elements">
 
                 <label for="exportDialog-action-range">
@@ -58,7 +62,7 @@
                 </label>
                 <textarea class="width-100" id="exportDialog-action-textarea"></textarea>
 
-                <label for="exportDialog-action-keepComments">
+                <label for="exportDialog-action-frameRate">
                     EDL Frame rate:
                 </label>
                 <input type="number" id="exportDialog-action-frameRate" />
