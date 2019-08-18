@@ -395,25 +395,23 @@ var EDLUtils_ = (function () {
                 var built_EDL = headers.join("\n") + events.map(function (event) {
                     var isComment = event[0].charAt(0) === '*';
                     var isM2 = event[0] === 'M2';
+                    var isNumEvent = !isNaN(event[0]);
 
                     // alter all events by prepending and padding them as defined above
                     return event.map(function (column, i) {
 
                         // if the event is a standard one
                         if (i === 0 && !(isComment || isM2)) {
-                            if (!isNaN(column))
+                            if (isNumEvent)
                                 return pad("00000000000000000", column, paddings[i], true);
                             else
                                 return column;
                         } else if (i === 0 && (isComment))
                             // '*' and 'M2' are returned as is
                             return column;
-                        else if (!(isComment || isM2) || isM2 && i === 1)
+                        else if (!(isComment || isM2 || !isNumEvent) || isM2 && i === 1)
                             // other columns from standard events are padded
                             return prePaddings[i] + pad(c_s_MAX_SPACE_PAD, column, paddings[i]);
-                        else if (isComment)
-                            // comments' columns are separated by a single space
-                            return " " + column;
                         else if (isM2 && i !== 1) {
                             if (i >= 4)
                                 return "";
@@ -435,7 +433,10 @@ var EDLUtils_ = (function () {
 
                             var    toPreAdd  = prePaddings[targetColumn - 1] + pad(c_s_MAX_SPACE_PAD, ""    , paddings[targetColumn - 1]);
                             return toPreAdd  + prePaddings[targetColumn] +     pad(c_s_MAX_SPACE_PAD, column, paddings[targetColumn]);
-                        } else
+                        } else if (isComment || !isNumEvent)
+                            // columns from comments and headers are separated by a single space
+                            return " " + column;
+                        else
                             throw new Error("Unhandled case");
                     }).reduce(function(a, b) {return a + (b !== false ? b : "");}, "").trim();
 
