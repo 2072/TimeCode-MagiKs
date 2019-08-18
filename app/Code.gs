@@ -21,10 +21,8 @@
  *
  */
 
-var SIDEBAR_TITLE = 'Unused Sidebar'; // not used for now, keep it available for the future
-
 /**
- * Adds a custom menu with items to show the sidebar and dialog.
+ * Adds a custom menu with items to show the dialogs.
  *
  * @param {Object} e The event parameter for a simple onOpen trigger.
  */
@@ -59,16 +57,6 @@ function onEnable(e) {
   openUsageExamplesLink();
 }
 
-/**
- * Opens a sidebar. The sidebar structure is described in the Sidebar.html
- * project file.
- */
-function showSidebar() {
-  var ui = HtmlService.createTemplateFromFile('Sidebar')
-      .evaluate()
-      .setTitle(SIDEBAR_TITLE);
-  SpreadsheetApp.getUi().showSidebar(ui);
-}
 
 /**
  * Opens a dialog. The dialog structure is described in the Dialog.html
@@ -104,28 +92,6 @@ function openUsageExamplesLink() {
 
     var ui = HtmlService.createHtmlOutput(html).setWidth(450).setHeight(100);
     SpreadsheetApp.getUi().showModelessDialog(ui,"TimeCode-Magiks Usage Examples");
-}
-
-/**
- * Returns the value in the active cell.
- *
- * @return {String} The value of the active cell.
- */
-function getActiveValue() {
-  // Retrieve and return the information requested by the sidebar.
-  var cell = SpreadsheetApp.getActiveSheet().getActiveCell();
-  return cell.getValue();
-}
-
-/**
- * Replaces the active cell value with the given value.
- *
- * @param {Number} value A reference number to replace with.
- */
-function setActiveValue(value) {
-  // Use data collected from sidebar to manipulate the sheet.
-  var cell = SpreadsheetApp.getActiveSheet().getActiveCell();
-  cell.setValue(value);
 }
 
 /**
