@@ -66,16 +66,16 @@ function showImportEDLDialog() {
   var ui = HtmlService.createTemplateFromFile('importDialog')
       .evaluate()
       .setWidth(800)
-      .setHeight(480);
-  SpreadsheetApp.getUi().showModalDialog(ui, 'EDL Import');
+      .setHeight(450);
+  SpreadsheetApp.getUi().showModalDialog(ui, "TimeCode-MagiKs - EDL Import");
 }
 
 function showExportEDLDialog() {
   var ui = HtmlService.createTemplateFromFile('exportDialog')
       .evaluate()
       .setWidth(800)
-      .setHeight(630);
-  SpreadsheetApp.getUi().showModalDialog(ui, 'EDL Export');
+      .setHeight(610);
+  SpreadsheetApp.getUi().showModalDialog(ui, 'TimeCode-MagiKs - EDL Export');
 }
 
 function openUsageExamplesLink() {
