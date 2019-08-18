@@ -138,7 +138,7 @@ function checkFPS_(fps, allowFrac) {
 function checkInteger_(v) {
     if (!isInt_(v))
         throw new E_IntegerExpected("Integer expected: '" + shortenWrongString(v) + "' of type '" + typeof v + "' given");
-    
+
 }
 
 /**
@@ -369,7 +369,7 @@ var EDLUtils_ = (function () {
                 // the required padding on the events of an EDL
                 // only the event number needs padding with leading zeros
                 var paddings    = [3, 0, 0, 0, 11, 11, 11, 11];
-                // In EDLS data columns are pepended by a certain amount of spaces 
+                // In EDLS data columns are pepended by a certain amount of spaces
                 var prePaddings = [0, 2, 2, 2, 8,   1,  1,  1].map(function (padLength, i) {
 
                     if (padLength === 0)
@@ -449,7 +449,7 @@ var EDLUtils_ = (function () {
                         throw e;
                 }
 
-                return built_EDL;                
+                return built_EDL;
 
             }
 
@@ -509,8 +509,8 @@ var EDLUtils_ = (function () {
             // keep comments and non empty lines
             return (a_row[c_i_EVENTN].charAt(0) !== "*" || keepComments) && a_row.join("") !== "";
         });
-       
-        if (!TIME_CODE_MODULUS_found) 
+
+        if (!TIME_CODE_MODULUS_found)
             edlArray.splice(1, 0, ["TIME_CODE_MODULUS:", fps, "", "", "", "", "", ""]);
 
         return edlArray;
@@ -549,7 +549,7 @@ var EDLUtils_ = (function () {
                 if (!(splitRow[4] === splitRow[6] && splitRow[5] === splitRow[7]))
                     throw new E_InvalidEDL("Unexpected mismatch between source and record: " + splitRow.toString());
             }
-            
+
             if (splitRow.length > 8)
                 throw new E_InvalidEDL("more than 8 columns: (" + splitRow + ")");
 
@@ -598,14 +598,14 @@ var EDLUtils_ = (function () {
             }
 
             return acc;
-                
+
         }, []);
 
         if (!MarkersFound)
             throw new E_InvalidEDL("No Resolve marker could be found");
 
 
-        
+
 
         return edlMarkerArray;
     }
@@ -1336,7 +1336,7 @@ function FRAME_TO_TC(frameNum, fps) {
     return (hours > 9 ? hours   : "0" + hours  ) + ":" +
         ( minutes > 9 ? minutes : "0" + minutes) + ":" +
         ( seconds > 9 ? seconds : "0" + seconds) + ":" +
-        (  images > 9 ? images  : "0" + images ); 
+        (  images > 9 ? images  : "0" + images );
 }
 
 /**
@@ -1591,14 +1591,14 @@ var LEVEL_DELIM = [" - ", String.fromCharCode(10)];
  * @customfunction
  */
 function ARRAY_TO_STRING(a, delim) {
-   
+
   if (!(a instanceof Array))
     return a;
-  
 
- if (! delim) 
+
+ if (! delim)
      delim = " :\t";
-  
+
   return a.reduce(function (acc, curr) {
     if (curr instanceof Array) {
       acc[acc.length] = ARRAY_TO_STRING(curr);
@@ -1606,11 +1606,11 @@ function ARRAY_TO_STRING(a, delim) {
     } else {
       acc[acc.length] = curr.toString();
     }
-    
+
     return acc;
-   
+
   }, []).join(delim);
-  
+
 }
 
 

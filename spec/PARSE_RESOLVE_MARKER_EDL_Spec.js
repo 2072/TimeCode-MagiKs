@@ -26,7 +26,7 @@ Insatbilité du cadre = Origine tournage = Pour ex |C:ResolveColorBlue |M:Marker
 006  001      V     C        01:27:06:16 01:27:06:17 01:27:06:16 01:27:06:17  
 Trace de colle en haut + peétouille en haut = A  reprendre |C:ResolveColorYellow |M:Marker 88 |D:125512
 
-007  001      V     C        01:04:55:22 01:04:55:23 01:04:55:22 01:04:55:23  
+007  001      V     C        01:04:55:22 01:04:55:23 01:04:55:22 01:04:55:23
 test 25:01 |C:ResolveColorYellow |M:Yellow Marker |D:601
 
 008  001      V     C        01:44:35:12 01:44:35:13 01:44:35:12 01:44:35:13  

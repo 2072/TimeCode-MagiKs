@@ -142,7 +142,7 @@ describe("TC_MagiK advanced API - EDL_SUMMARY", () => {
 
         expect(_EDL_SUMMARY(SimpleValidEDLWithSourceMapping)).toThrowError(E_InvalidFPS, "no fps given and no TIME_CODE_MODULUS header found.");
 
-       
+
     });
 
     // TODO tests missing M2 references, bad dissolve length, test for missing dissolve event parts (not implemented)

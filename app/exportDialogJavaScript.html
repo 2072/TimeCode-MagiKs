@@ -74,7 +74,7 @@
 
     // Send the range to the server and handle the response.
     google.script.run
-        .withSuccessHandler(    
+        .withSuccessHandler(
                 function(result, execButton) {
                     // Respond to success conditions here.
                     showStatus('Exportation successful' + (result[1] !== false ? " with warnings: " + result[1] : "!"), result[1]?"warning":"good");

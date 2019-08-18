@@ -115,7 +115,7 @@ describe("TC_MagiK advanced API - EDLUtils_", () => {
             +"* FROM CLIP NAME: Bobine_05_B.mov"+ "\n"
             +"120  BL           V  C        05:14:28:01 05:14:30:00 05:14:28:01 05:14:30:00"+ "\n"
             +"* FROM CLIP NAME: Solid Color"
-        ).replace(/ /g, "-").split("\n") 
+        ).replace(/ /g, "-").split("\n")
         );
 
     });
