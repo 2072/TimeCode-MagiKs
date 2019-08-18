@@ -83,15 +83,20 @@ function openUsageExamplesLink() {
     var buttonClose = '<button onclick="google.script.host.close()">Close</button>';
 
     var text = "Open a spreadsheet with many usage examples and detailed instructions?";
-    var html = '<html><header><link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"></header>'
-        + "<body><center>"
-        + text + "<br /><br />"
-        + '<div class="block form-group" style="margin: 30px;"><div class="inline">'+ buttonOpen + '</div><div class="inline">' + buttonClose + '</div></div>'
-        + "</center></body></html>";
+    var html = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" /><title>Usage examples</title></head>'
+        + '<body style="text-align:center">'
+        + text
+        + '<br /><br />'
+        + '<div class="block form-group" style="margin: 30px;"><div class="inline">'
+        + buttonOpen
+        + '</div><div class="inline">'
+        + buttonClose
+        + '</div></div>'
+        + '</body></html>';
 
 
     var ui = HtmlService.createHtmlOutput(html).setWidth(450).setHeight(100);
-    SpreadsheetApp.getUi().showModelessDialog(ui,"TimeCode-Magiks Usage Examples");
+    SpreadsheetApp.getUi().showModelessDialog(ui,"TimeCode-Magiks - Usage Examples");
 }
 
 /**
@@ -153,27 +158,11 @@ function extractEDL(title, range, frameRate) {
     return [builtEDL, edlBuilder.warnings, edlBuilder.EDLSummary];
 }
 
-
 /**
- * Executes the specified action (create a new sheet, copy the active sheet, or
- * clear the current sheet).
+ * Get the active range (the current cell(s) selection) as 'A1' notation
  *
- * @param {String} action An identifier for the action to take.
  */
-function modifySheets(action) {
-  // Use data collected from dialog to manipulate the spreadsheet.
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var currentSheet = ss.getActiveSheet();
-  if (action == "create") {
-    ss.insertSheet();
-  } else if (action == "copy") {
-    currentSheet.copyTo(ss);
-  } else if (action == "clear") {
-    currentSheet.clear();
-  }
-}
-
-function getActiveRangeAsText() {
+function getActiveRangeAsA1Notation() {
   return SpreadsheetApp.getActiveSheet().getActiveRange().getA1Notation();
 }
 
