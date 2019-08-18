@@ -33,11 +33,11 @@ function onOpen(e) {
         menu.addItem('Enable in this document', 'onEnable')
         menu.addToUi();
     } else {
-
         menu.addItem('Import EDL', 'showImportEDLDialog')
             .addItem('Export EDL', 'showExportEDLDialog')
             .addSeparator()
             .addItem('See usage examples', 'openUsageExamplesLink')
+            .addItem('See version "'+ TCM_VERSION + '" News', 'openVersionChangelogDialog')
             .addToUi();
     }
 }
@@ -97,6 +97,28 @@ function openUsageExamplesLink() {
 
     var ui = HtmlService.createHtmlOutput(html).setWidth(450).setHeight(100);
     SpreadsheetApp.getUi().showModelessDialog(ui,"TimeCode-Magiks - Usage Examples");
+}
+
+function openVersionChangelogDialog() {
+    var buttonClose = '<button onclick="google.script.host.close()">Close</button>';
+
+    var html = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css" /><title>Version Change log</title>'
+        + "<?!= HtmlService.createHtmlOutputFromFile('Stylesheet').getContent(); ?>"
+        + '</head>'
+        + '<body style="text-align:center">'
+        + '<div class="block">'
+        + '<textarea class="width-100 fixedFont" style="height: 15em" readonly>'
+        + "<?!= HtmlService.createHtmlOutputFromFile('changelog.md').getContent(); ?>"
+        + '</textarea>'
+        + '</div>'
+        + '<div class="inline ">'
+        + buttonClose
+        + '</div>'
+        + '</body></html>';
+
+
+    var ui = HtmlService.createTemplate(html).evaluate().setWidth(500).setHeight(230);
+    SpreadsheetApp.getUi().showModelessDialog(ui,"TimeCode-Magiks - Version '" + TCM_VERSION + "' News");
 }
 
 /**
