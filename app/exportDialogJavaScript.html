@@ -61,7 +61,7 @@
     showStatus('Working...');
 
     if (range === "") {
-        showStatus('There is nothing to import', 'error');
+        showStatus('There is nothing to export', 'error');
         this.disabled = false;
         return;
     }
@@ -76,10 +76,10 @@
     google.script.run
         .withSuccessHandler(    
                 function(result, execButton) {
-                // Respond to success conditions here.
-                showStatus('importation successful.');
-                $('#exportDialog-action-textarea').val(result);
-                execButton.disabled = false;
+                    // Respond to success conditions here.
+                    showStatus('Exportation successful' + (result[1] !== false ? " with warnings: " + result[1] : "!"), result[1]?"warning":"good");
+                    $('#exportDialog-action-textarea').val(result[0]);
+                    execButton.disabled = false;
                 })
     .withFailureHandler(
             function(msg, execButton) {
@@ -100,9 +100,9 @@
    *   should be displayed as.
    */
   function showStatus(msg, classId) {
-    $('#exportDialog-status').removeClass().html(msg);
+    $('#exportDialog-status').removeClass().text(msg);
     if (classId) {
-      $('#exportDialog-status').addClass(classId);
+      $('#exportDialog-status').removeClass().addClass(classId);
     }
   }
 

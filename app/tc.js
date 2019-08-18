@@ -261,27 +261,20 @@ var EDLUtils_ = (function () {
 
             var my = {};
             var events = [];
+            my.EDLSummary = [];
+            my.warnings = false;
 
-            function addEvent (eventN, source, track, type, srcIn, srcOut, recIn, recOut, comment) {
-                var edlEvent = [eventN, source, track, type, srcIn, srcOut, recIn, recOut, comment];
+            function addEvent (eventN, source, track, type, srcIn, srcOut, recIn, recOut) {
+                var edlEvent = [eventN, source, track, type, srcIn, srcOut, recIn, recOut];
 
                 // make sure that known numbers are strings, let other things be for now
-                 events[events.length] = edlEvent.map(function(eventColumn) {
-                    if (typeof eventColumn === "string")
-                        return eventColumn;
-                    else if (eventColumn || eventColumn === 0)
-                        return eventColumn.toString();
-                    else
-                        return eventColumn;
-                });
-
-
+                 events[events.length] = edlEvent;
             }
 
             function importEvents(eventArray) {
 
-                if (!(eventArray instanceof Array))
-                    throw new E_InvalidEDL("eventArray must be an Array. " + typeof eventArray + " given");
+                if (!(eventArray instanceof Array) || !(eventArray[0] instanceof Array))
+                    throw new E_InvalidEDL("eventArray must be an Array of Arrays. " + typeof eventArray + " given");
 
 
                 function extractData(givenData, eventN) {
@@ -289,8 +282,10 @@ var EDLUtils_ = (function () {
                     if (!(givenData instanceof Array))
                         throw new E_InvalidEDL("givenData must be an Array. " + typeof givenData + " given");
                     // extrapolate data depending on row length
-                    // only support 3 for now
 
+                    // 3 is when we have in, out and comment
+                    // the source can be extracted if there is a source included in the TC
+                    // such as TC created by our matchback API
                     if (givenData.length === 3) {
 
                         var srcIn, srcOut, source = "";
@@ -313,18 +308,35 @@ var EDLUtils_ = (function () {
                             givenData[2].toString();
 
                         // create the event
-                        addEvent(eventN, source, "V", "C", srcIn, srcOut, srcIn, srcOut, givenData[2] ? givenData[2] : false);
+                        addEvent(eventN + "", source, "V", "C", srcIn, srcOut, srcIn, srcOut);
+                        if (givenData[2])
+                            events[events.length] = ['*', givenData[2]];
 
+                    } else if (givenData.length === 8) {
+                        events[events.length] = givenData
                     } else
-                        throw new E_InvalidEDL("please provide 3 by Y arrays with [srcIn, [srcOut, Comment]]");
+                        throw new E_InvalidEDL("Please provide either a 3 by Y arrays with <srcIn, [srcOut], [Comment]> (ie: an EDL to use as markers) or a standard EDL range (8 by Y) ; "
+                        + givenData.length + " columns array given on row " + eventN);
 
                 }
 
+                // filter and transform input
                 eventArray.filter(function (row) {
-                    return !!row[0];
-                }).forEach(function (thrice, i) {
-                    extractData(thrice, i);
+                    return !!row[0]; // filter out empty lines
+                }).forEach(function (row, i) {
+                    // convert everything to strings and trim
+                    extractData(row.map(function(column) {
+                        if (typeof column === "string")
+                            return column.trim();
+                        else if (column || column === 0)
+                            return column.toString().trim()
+                        else if (column === undefined || column === false || column === null)
+                            return "";
+                    }), i);
                 });
+
+                if (!events.length)
+                    throw new E_InvalidEDL("No event found!?!");
 
                 return my;
             }
@@ -332,7 +344,7 @@ var EDLUtils_ = (function () {
             my.importEvents = importEvents;
 
 
-            function build() {
+            function build(strictValidate) {
 
                 /**
                  * pad a string on the right or on the left
@@ -348,53 +360,96 @@ var EDLUtils_ = (function () {
                         return (str+padchars).slice(0, length);
                 }
 
-                var headers = [
+                var headers = events[0][0] !== "TITLE:" ? [
                     "TITLE:" + title,
                     "TIME_CODE_MODULUS:" + fps,
                     ""
-                ];
+                ] : [];
 
                 // the required padding on the events of an EDL
                 // only the event number needs padding with leading zeros
-                var paddings    = [3, 0, 0, 0, 0, 0, 0, 0, 0];
+                var paddings    = [3, 0, 0, 0, 11, 11, 11, 11];
                 // In EDLS data columns are pepended by a certain amount of spaces 
-                var prePaddings = [0, 2, 2, 2, 8, 1, 1, 1, "*"].map(function (padLength, i) {
+                var prePaddings = [0, 2, 2, 2, 8,   1,  1,  1].map(function (padLength, i) {
 
                     if (padLength === 0)
                         return "";
-                    else if (i < 8)
+                    else
                         return "           ".slice(-padLength);
-                    else if (i === 8)
-                        return "\n* ";
 
                 });
 
-
-                // compute necessary paddings
+                // compute necessary paddings (find the maximum for each column)
                 events.forEach(function (event) {
-                    event.forEach(function (e, i) {
-                        if (e !== false && e.length > paddings[i])
-                            paddings[i] = e.length;
-                    });
+                    // only sweep through normal event whose first colum is a number
+                    if (!isNaN(event[0]))
+                        event.forEach(function (column, i) {
+                            if (typeof column !== 'string')
+                                throw new Error("Internal: column "+i+" is not a string: " + typeof column);
+                            if (column !== false && column.length > paddings[i])
+                                paddings[i] = column.length;
+                        });
                 });
 
                 // adjust paddings in events and build lines
-                return headers.join("\n") + events.map(function (event) {
+                var built_EDL = headers.join("\n") + events.map(function (event) {
+                    var isComment = event[0].charAt(0) === '*';
+                    var isM2 = event[0] === 'M2';
 
                     // alter all events by prepending and padding them as defined above
-                    return event.map(function (e, i) {
+                    return event.map(function (column, i) {
 
-                        if (i === 8) {
-                            if (e !== false) // comments are optional
-                                return prePaddings[i] + e; // do not pad comments
+                        // if the event is a standard one
+                        if (i === 0 && !(isComment || isM2)) {
+                            if (!isNaN(column))
+                                return pad("00000000000000000", column, paddings[i], true);
                             else
-                                return e;
-                        }
+                                return column;
+                        } else if (i === 0 && (isComment))
+                            // '*' and 'M2' are returned as is
+                            return column;
+                        else if (!(isComment || isM2) || isM2 && i === 1)
+                            // other columns from standard events are padded
+                            return prePaddings[i] + pad(c_s_MAX_SPACE_PAD, column, paddings[i]);
+                        else if (isComment)
+                            // comments' columns are separated by a single space
+                            return " " + column;
+                        else if (isM2 && i !== 1) {
+                            if (i >= 4)
+                                return "";
 
-                        return prePaddings[i] + pad(i === 0 ? "00000000000000000" : c_s_MAX_SPACE_PAD, e, paddings[i], i === 0);
-                    }).reduce(function(a, b) {return a + (b !== false ? b : "");}, "");
+                            if (i === 0)
+                                return column +" ";
+
+                            // in M2 events, after the second column, each subsequent column skips the previous column
+                            // so we must add an empty column before.
+                            // (this comes from the way we import them where we don't leave any gap)
+                            var targetColumn;
+
+                            if (i == 2)
+                                targetColumn = 3;
+                            else if (i == 3)
+                                targetColumn = 5;
+                            else
+                                targetColumn = i;
+
+                            var    toPreAdd  = prePaddings[targetColumn - 1] + pad(c_s_MAX_SPACE_PAD, ""    , paddings[targetColumn - 1]);
+                            return toPreAdd  + prePaddings[targetColumn] +     pad(c_s_MAX_SPACE_PAD, column, paddings[targetColumn]);
+                        } else
+                            throw new Error("Unhandled case");
+                    }).reduce(function(a, b) {return a + (b !== false ? b : "");}, "").trim();
 
                 }).join("\n");
+
+                try {
+                    my.EDLSummary = EDL_SUMMARY(rawEDLToArrays(built_EDL, fps, true));
+                } catch(e) {
+                    my.warnings = "Generated EDL does not seem valid: " + e.toString();
+                    if (strictValidate)
+                        throw e;
+                }
+
+                return built_EDL;                
 
             }
 

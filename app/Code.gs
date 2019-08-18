@@ -86,8 +86,8 @@ function showExportEDLDialog() {
   var ui = HtmlService.createTemplateFromFile('exportDialog')
       .evaluate()
       .setWidth(800)
-      .setHeight(550);
-  SpreadsheetApp.getUi().showModalDialog(ui, 'EDL Export (experimental)');
+      .setHeight(630);
+  SpreadsheetApp.getUi().showModalDialog(ui, 'EDL Export');
 }
 
 function openUsageExamplesLink() {
@@ -181,9 +181,10 @@ function extractEDL(title, range, frameRate) {
     // TODO:
     // - add default source name
     // - option to make record TC continuous
-    // - add an option to check the edl using edl_summary
 
-    return edlBuilder.build();
+    var builtEDL = edlBuilder.build();
+
+    return [builtEDL, edlBuilder.warnings, edlBuilder.EDLSummary];
 }
 
 
