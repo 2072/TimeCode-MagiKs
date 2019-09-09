@@ -313,10 +313,9 @@ var EDLUtils_ = (function () {
                             events[events.length] = ['*', givenData[2]];
 
                     } else if (givenData.length === 8) {
-                        events[events.length] = givenData
+                        events[events.length] = givenData;
                     } else
-                        throw new E_InvalidEDL("Please provide either a 3 by Y arrays with <srcIn, [srcOut], [Comment]> (ie: an EDL to use as markers) or a standard EDL range (8 by Y) ; "
-                        + givenData.length + " columns array given on row " + eventN);
+                        throw new E_InvalidEDL("Please provide either a 3 by Y arrays with <srcIn, [srcOut], [Comment]> (ie: an EDL to use as markers) or a standard EDL range (8 by Y) ; " + givenData.length + " columns array given on row " + eventN);
 
                 }
 
@@ -329,7 +328,7 @@ var EDLUtils_ = (function () {
                         if (typeof column === "string")
                             return column.trim();
                         else if (column || column === 0)
-                            return column.toString().trim()
+                            return column.toString().trim();
                         else if (column === undefined || column === false || column === null)
                             return "";
                     }), i);
