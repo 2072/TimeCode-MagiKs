@@ -4,7 +4,7 @@
   "description": "Provides timecode conversion tools for Spreadheets",
   "main": "app/tc.js",
   "scripts": {
-    "test": "jasmine"
+    "test": "./node_modules/.bin/jasmine"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,9 @@
   "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://www.2072productions.com/to/TimecodeMagiks.txt",
   "dependencies": {
-    "jasmine-node": "^3.0.0"
+  },
+  "devDependencies": {
+    "jasmine": "^3.4.0",
+    "jshint": "^2.10.2"
   }
 }
