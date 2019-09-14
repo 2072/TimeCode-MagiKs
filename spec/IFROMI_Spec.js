@@ -30,7 +30,7 @@ describe("TC_MagiK base API - IFROMI", () => {
         expect(_IFROMI(testValues[3], -1*24)).toThrowError(E_InvalidFPS, /fps must be > 0/);
         expect(_IFROMI(testValues[3], 0)).toThrowError(E_InvalidFPS, /fps must be > 0/);
         expect(_IFROMI(testValues[3], 25.0)).not.toThrow();
-        expect(_IFROMI(testValues[3], 25.1)).toThrowError(E_InvalidFPS, /fractional fps are not supported yet!/);
+        expect(_IFROMI(testValues[3], 25.1)).toThrowError(E_InvalidFPS, /Unsupported fps: /);
     });
 
 

@@ -39,7 +39,7 @@ describe("TC_MagiK base API - TC_TO_FRAME", function () {
         expect(_TC_TO_FRAME("01:00:00:00", -1*24)).toThrowError(E_InvalidFPS, /fps must be > 0/);
         expect(_TC_TO_FRAME("01:00:00:00", 0)).toThrowError(E_InvalidFPS, /fps must be > 0/);
         expect(_TC_TO_FRAME("01:00:00:00", 25.0)).not.toThrow();
-        expect(_TC_TO_FRAME("01:00:00:00", 25.1)).toThrowError(E_InvalidFPS, /fractional fps are not supported yet!/);
+        expect(_TC_TO_FRAME("01:00:00:00", 25.1)).toThrowError(E_InvalidFPS, /Unsupported fps: /);
     });
 
     it("detects invalid TCs", function () {
