@@ -354,9 +354,9 @@ var EDLUtils_ = (function () {
                  */
                 function pad (padchars, str, length, left) {
                     if (left)
-                        return (padchars + str).slice(-length);
+                        return (padchars + str).slice(length < str.length ? -(str.length + length): -length);
                     else
-                        return (str+padchars).slice(0, length);
+                        return (str+padchars).slice(0, length < str.length ? str.length : length);
                 }
 
                 var headers = events[0][0] !== "TITLE:" ? [
