@@ -41,7 +41,7 @@
 /* jshint -W097 */
 "use strict";
 
-var TCM_VERSION = "v1.4dev"; // can't be a const because of GAS strange limitation...
+var TCM_VERSION = "v1.3a"; // can't be a const because of GAS strange limitation...
 
 // compat layer with NodeJS
 var Utilities = typeof Utilities === "undefined" ? {} : Utilities;
@@ -1262,7 +1262,7 @@ var tcToFrame_ = (function() {
     return function (timeCode, fps) {
         return checkTC_(timeCode, true).split(':').reverse().reduce(
                 function (previousValue, currentValue, i, a) {
-                    if (i === 0 && +currentValue > fps - 1 || i > 0 && +currentValue > max[i])
+                    if (i === 0 && +currentValue > NDFFPS_adjust(fps) - 1 || i > 0 && +currentValue > max[i])
                         throw new E_InvalidTimeCode('Illegal "' + a[i] + '" found in TC');
 
                     if (i === 0)
