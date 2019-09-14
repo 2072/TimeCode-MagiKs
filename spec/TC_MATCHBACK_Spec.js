@@ -70,6 +70,35 @@ describe("TC_MagiK advanced API - TC_MATCHBACK", () => {
         expect(_TC_MATCHBACK("15:00:42:08",24, SimpleValidEDL)).toThrowError(E_NotFoundInEDL, "record TC not found in EDL (gap ?), TC: 15:00:42:08");
         expect(_TC_MATCHBACK("19:00:05:22",24, SimpleValidEDL)).toThrowError(E_NotFoundInEDL, "record TC out-ran EDL record length, TC: 19:00:05:22");
     });
-    
+
+
+    var RawEDLWithM2_1 = "TITLE: t.Copy.01\n"+
+        "FCM: NON-DROP FRAME\n"+
+        "001  T1                V  C            01:00:05:18 01:00:05:19 07:07:23:04 07:07:28:03\n"+
+        "M2   T1                   -24                      01:00:05:18\n"+
+        "002  T1                V  C            01:00:00:19 01:00:00:19 07:07:28:03 07:07:28:03\n"+
+        "002  T2                V  D 024        02:00:07:10 02:00:07:11 07:07:28:03 07:07:29:03\n"+
+        "M2   T1                   -24                      01:00:00:19\n"+
+        "M2   T2                   -12                      02:00:07:10\n"+
+        "* BLEND, DISSOLVE\n"+
+        "003  T2                V  C            02:00:06:22 02:00:06:23 07:07:29:03 07:07:40:08\n"+
+        "M2   T2                   -12                      02:00:06:22\n"+
+        "004  GENE_FIN_FR_6545  V  C            01:00:02:21 01:02:17:19 07:08:24:03 07:10:39:01\n";
+
+    var RawEDLWithM2_2 = "TITLE:No title given\n"+
+        "TIME_CODE_MODULUS:24\n"+
+        "003  BOB07  V  C        07:07:37:02 07:07:40:06 07:07:29:03 07:07:40:08\n"+
+        "M2   BOB07     6.7                    07:07:37:02\n";
+
+    it("supports basic M2 motion effects", () => {
+        var EDLWithM2_1 = EDLUtils_.rawEDLToArrays(RawEDLWithM2_1, 24, true);
+        var EDLWithM2_2 = EDLUtils_.rawEDLToArrays(RawEDLWithM2_2, 24, true);
+
+        expect(_TC_MATCHBACK("7:7:33:01",24, EDLWithM2_1)()).toEqual("02:00:04:23");
+        expect(_TC_MATCHBACK("7:7:27:01",24, EDLWithM2_1)()).toEqual("01:00:01:21");
+        expect(_TC_MATCHBACK("7:7:33:01",24, EDLWithM2_2)()).toEqual("07:07:38:04");
+
+    });
+
 });
 
