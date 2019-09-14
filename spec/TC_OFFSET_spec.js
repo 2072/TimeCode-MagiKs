@@ -36,7 +36,7 @@ describe("TC_MagiK base API - TC_OFFSET", function () {
 
         expect(_TC_OFFSET("01:00:00:00", 25.0, 24.0)).not.toThrow();
 
-        expect(_TC_OFFSET("01:00:00:00", 25, 24.1)).toThrowError(E_InvalidFPS, /fractional fps are not supported yet!/);
+        expect(_TC_OFFSET("01:00:00:00", 25, 24.1)).toThrowError(E_InvalidFPS, /Unsupported fps: /);
     });
 
     it("detects invalid offset", function () {

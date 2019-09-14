@@ -41,7 +41,7 @@
 /* jshint -W097 */
 "use strict";
 
-var TCM_VERSION = "v1.2"; // can't be a const because of GAS strange limitation...
+var TCM_VERSION = "v1.2a-dev"; // can't be a const because of GAS strange limitation...
 
 // compat layer with NodeJS
 var Utilities = typeof Utilities === "undefined" ? {} : Utilities;
@@ -122,14 +122,28 @@ function isInputMultiline_(input) {
  */
 function checkFPS_(fps, allowFrac) {
     if (typeof fps !== 'number')
-        throw new E_InvalidFPS('fps must be an integer (' + shortenWrongString(fps) + ') given; ' + typeof fps );
-
-    if (!isInt_(fps) && allowFrac !== true)
-        throw new E_InvalidFPS('fractional fps are not supported yet! (' + fps + ') given');
+        throw new E_InvalidFPS('fps must be a number (' + shortenWrongString(fps) + ') given; ' + typeof fps );
 
     if (fps <= 0)
         throw new E_InvalidFPS('fps must be > 0 (' + fps + ') given');
+
+    if (!allowFrac)
+        NDFFPS_adjust(fps);
 }
+
+/**
+ * (private) accept some non-dropFrame valid FPS and return their interger real value
+ *
+ */
+function NDFFPS_adjust(fps) {
+    if (isInt_(fps) && fps > 0)
+        return fps;
+    else if (fps === 23.976 || fps === 23.97 || fps === 23.98)
+        return 24;
+    else
+        throw new E_InvalidFPS('Unsupported fps: ' + fps + '. Use integer or 23.976');
+}
+
 
 /**
  * (private) Throws an E_IntegerExpected if v is not an integer
@@ -214,7 +228,7 @@ function recurseOnMultiline3_(f, stringArg1, intArg2, arg3, doParseInt) {
 }
 
 /**
- * (private) assume arrayArg1 is an array ans map f on it while keeping
+ * (private) assume arrayArg1 is an array and map f on it while keeping
  * exceptions as strings
  *
  */
@@ -626,10 +640,11 @@ var EDLUtils_ = (function () {
     }
 
     function setSRCIN_if_NegM2 (modeA, i, fps) {
+        fps = NDFFPS_adjust(fps);
         // Fix reverse motion effects source in point but ignore non-events (dissolves in points)
         if (modeA[i][c_i_M2SPEED] !== null && modeA[i][c_i_M2SPEED] < 0 && modeA[i][c_i_SRCOUT] - modeA[i][c_i_SRCIN] > 0) {
             // c_i_SRCIN is wrong on these events (c_i_SRCOUT - 1)
-            modeA[i][c_i_SRCIN] = (modeA[i][c_i_SRCOUT] - ((modeA[i][c_i_RECOUT] - modeA[i][c_i_RECIN]) * -1 * (modeA[i][c_i_M2SPEED] / fps))) | 0;
+            modeA[i][c_i_SRCIN] = (modeA[i][c_i_SRCOUT] - ((modeA[i][c_i_RECOUT] - modeA[i][c_i_RECIN]) * -1 * (modeA[i][c_i_M2SPEED] / fps))) | 0; // XXX TODO literal fps is being used in computation
         }
     }
 
@@ -762,7 +777,7 @@ var EDLUtils_ = (function () {
                     } else if (modeA[i - 1][c_i_M2SPEED] > 0) {
                         // adjust the tc out taking the M2's fps into account starting from the in point to avoid imprecision errors
                         modeA[i - 1][c_i_SRCOUT] = modeA[i - 1][c_i_SRCIN] + 1 +
-                            ((modeA[i - 1][c_i_RECOUT] - modeA[i - 1][c_i_RECIN]) * (modeA[i][c_i_M2SPEED] / fps)) | 0;
+                            ((modeA[i - 1][c_i_RECOUT] - modeA[i - 1][c_i_RECIN]) * (modeA[i][c_i_M2SPEED] / NDFFPS_adjust(fps))) | 0; // XXX literal fps used in calculus
 
                         if (modeA[i - 1][c_i_SRCOUT] < modeA[i][c_i_SRCOUT])
                             throw new Error("Dissolve on M2 adjustment sanity check failure");
@@ -852,9 +867,9 @@ var EDLUtils_ = (function () {
                     var match = 0;
                     if (a_fpe[i][c_i_M2SPEED] >= 0)
                         // apply speed corrections and truncate to integer (it's what Avid does apparently)
-                        match = a_fpe[i][c_i_SRCIN] + (((rec_frame - a_fpe[i][c_i_RECIN]) * (a_fpe[i][c_i_M2SPEED] / a_fpe.fps)) | 0);
+                        match = a_fpe[i][c_i_SRCIN] + (((rec_frame - a_fpe[i][c_i_RECIN]) * (a_fpe[i][c_i_M2SPEED] / NDFFPS_adjust(a_fpe.fps))) | 0); // XXX literal fps used
                     else
-                        match = (a_fpe[i][c_i_SRCOUT] - 1 + ((rec_frame - a_fpe[i][c_i_RECIN]) * (a_fpe[i][c_i_M2SPEED] / a_fpe.fps))) | 0;
+                        match = (a_fpe[i][c_i_SRCOUT] - 1 + ((rec_frame - a_fpe[i][c_i_RECIN]) * (a_fpe[i][c_i_M2SPEED] / NDFFPS_adjust(a_fpe.fps)))) | 0; // XXX literal fps used
 
                     // constrive the matched source TC to this event range
                     if (match >= a_fpe[i][c_i_SRCOUT])
@@ -908,13 +923,13 @@ var EDLUtils_ = (function () {
                     if (a_fpe[i][c_i_M2SPEED] >= 0)
                         // here we need to round up instead of truncating to be consistent with what Avid does (I'm not sure why...)
                         match = a_fpe[i][c_i_RECIN] + (a_fpe[i][c_i_M2SPEED] !== 0 ?
-                                Math.round((source_frame - a_fpe[i][c_i_SRCIN]) * (a_fpe.fps / a_fpe[i][c_i_M2SPEED]))|0
+                                Math.round((source_frame - a_fpe[i][c_i_SRCIN]) * (NDFFPS_adjust(a_fpe.fps) / a_fpe[i][c_i_M2SPEED]))|0 // XXX literal fps used
                                 : 0);
                     else
                         // we must approach the rec tc from the left to get the first image and not the last (if it's a slow motion)
                         match = a_fpe[i][c_i_RECOUT] - 1 -
-                                (Math.round(  (source_frame - a_fpe[i][c_i_SRCIN]) * -1 * (a_fpe.fps / a_fpe[i][c_i_M2SPEED]) +0.5 ));
-                                //(Math.round((a_fpe[i][c_i_SRCOUT] - 1 - source_frame) * -1 * (a_fpe.fps / a_fpe[i][c_i_M2SPEED])));
+                                (Math.round(  (source_frame - a_fpe[i][c_i_SRCIN]) * -1 * (NDFFPS_adjust(a_fpe.fps) / a_fpe[i][c_i_M2SPEED]) +0.5 )); // XXX literal fps used
+                                //(Math.round((a_fpe[i][c_i_SRCOUT] - 1 - source_frame) * -1 * (NDFFPS_adjust(a_fpe.fps) / a_fpe[i][c_i_M2SPEED])));
 
                     // constrive the matched record TC to this event range
                     if (match >= a_fpe[i][c_i_RECOUT])
@@ -1253,7 +1268,7 @@ var tcToFrame_ = (function() {
                     if (i === 0)
                         return previousValue + (+currentValue);
                     else
-                        return previousValue + (+currentValue) * fps * Math.pow(60,(i - 1));
+                        return previousValue + (+currentValue) * NDFFPS_adjust(fps) * Math.pow(60,(i - 1));// XXX literal fps used
                 },
                 0);
     };
@@ -1311,7 +1326,8 @@ function FRAME_TO_TC(frameNum, fps) {
         return recurseOnMultiline_(FRAME_TO_TC, frameNum, fps, true);
 
     checkInteger_(frameNum);
-
+    fps = NDFFPS_adjust(fps);
+    // XXX literal fps used
     var MAX_FRAME_NUM = 86400 * fps;
 
     // wrap around if frameNum > MAX_FRAME_NUM
@@ -1473,8 +1489,9 @@ function IFROMI(value, fps) {
         return recurseOnMultiline_(IFROMI, value, fps, true);
 
     checkInteger_(value);
+    fps = NDFFPS_adjust(fps);
 
-    return value % fps;
+    return value % fps;// XXX literal fps used
 }
 
 /**
@@ -1497,7 +1514,8 @@ function SFROMI(value, fps) {
     if (isInputMultiline_(value))
         return recurseOnMultiline_(SFROMI, value, fps, true);
 
-    return ((value - IFROMI(value, fps)) / fps) % 60;
+    fps = NDFFPS_adjust(fps);
+    return ((value - IFROMI(value, fps)) / fps) % 60;// XXX literal fps used
 }
 
 /**
@@ -1520,7 +1538,8 @@ function MFROMI(value, fps) {
     if (isInputMultiline_(value))
         return recurseOnMultiline_(MFROMI, value, fps, true);
 
-    return ((value- IFROMI(value, fps) - SFROMI(value, fps) * fps) / ( 60 * fps)) % 60;
+    fps = NDFFPS_adjust(fps);
+    return ((value- IFROMI(value, fps) - SFROMI(value, fps) * fps) / ( 60 * fps)) % 60;// XXX literal fps used
 }
 
 /**
@@ -1543,7 +1562,8 @@ function MFROMIRAW(value, fps) {
     if (isInputMultiline_(value))
         return recurseOnMultiline_(MFROMIRAW, value, fps, true);
 
-    return ((value - IFROMI(value, fps) - SFROMI(value, fps) * fps) / ( 60 * fps));
+    fps = NDFFPS_adjust(fps);
+    return ((value - IFROMI(value, fps) - SFROMI(value, fps) * fps) / ( 60 * fps));// XXX literal fps used
 }
 
 /**
@@ -1566,7 +1586,8 @@ function HFROMI(value, fps) {
     if (isInputMultiline_(value))
         return recurseOnMultiline_(HFROMI, value, fps, true);
 
-    return (value - IFROMI(value, fps) - SFROMI(value, fps) * fps - MFROMI(value, fps) * 60 * fps) / ( 60 * 60 * fps);
+    fps = NDFFPS_adjust(fps);
+    return (value - IFROMI(value, fps) - SFROMI(value, fps) * fps - MFROMI(value, fps) * 60 * fps) / ( 60 * 60 * fps);// XXX literal fps used
 }
 
 /**
