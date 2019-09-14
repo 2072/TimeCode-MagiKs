@@ -41,7 +41,7 @@
 /* jshint -W097 */
 "use strict";
 
-var TCM_VERSION = "v1.2a-dev"; // can't be a const because of GAS strange limitation...
+var TCM_VERSION = "v1.4dev"; // can't be a const because of GAS strange limitation...
 
 // compat layer with NodeJS
 var Utilities = typeof Utilities === "undefined" ? {} : Utilities;
