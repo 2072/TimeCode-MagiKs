@@ -9,5 +9,5 @@ For more information see the [Timecode-Magiks' official page][TCMPage].
 
 
 [chromeStore]: https://www.2072productions.com/to/TimeCode-MagiKs-chromestore
-[chromeStoreLogo]: https://developer.chrome.com/webstore/images/ChromeWebStore_BadgeWBorder_v2_206x58.png  "Chrome Web Store"
+[chromeStoreLogo]: https://ssl.gstatic.com/apps/additnow/images/hedgehog_light_logo_1x.png  "Google Worskspace Marketplace"
 [TCMPage]: https://www.2072productions.com/to/TimecodeMagiks.txt
