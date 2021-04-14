@@ -6,49 +6,59 @@ describe("TC_MagiK advanced sub-API - PARSE_RESOLVE_MARKER_EDL", () => {
 
 
     var rawExample = `
-TITLE: ( no title )
-
-001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07  
-Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
-
-002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21  
-Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
-
-003  001      V     C        01:00:42:21 01:00:42:22 01:00:42:21 01:00:42:22  
-Tache d'eau en haut à gauche |C:ResolveColorBlue |M:Marker 3 |D:1
-
-004  001      V     C        01:00:52:23 01:00:53:00 01:00:52:23 01:00:53:00  
-Tache en eau du cadre vers le centre blanche |C:ResolveColorBlue |M:Marker 4 |D:1
-
-005  001      V     C        01:01:44:10 01:01:44:11 01:01:44:10 01:01:44:11  
-Insatbilité du cadre = Origine tournage = Pour ex |C:ResolveColorBlue |M:Marker 5 |D:1
-
-006  001      V     C        01:27:06:16 01:27:06:17 01:27:06:16 01:27:06:17  
-Trace de colle en haut + peétouille en haut = A  reprendre |C:ResolveColorYellow |M:Marker 88 |D:125512
-
+TITLE: ( no title )
+
+001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07
+Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
+
+002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21
+Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
+
+003  001      V     C        01:00:42:21 01:00:42:22 01:00:42:21 01:00:42:22
+Tache d'eau en haut à gauche |C:ResolveColorBlue |M:Marker 3 |D:1
+
+004  001      V     C        01:00:52:23 01:00:53:00 01:00:52:23 01:00:53:00
+Tache en eau du cadre vers le centre blanche |C:ResolveColorBlue |M:Marker 4 |D:1
+
+005  001      V     C        01:01:44:10 01:01:44:11 01:01:44:10 01:01:44:11
+Insatbilité du cadre = Origine tournage = Pour ex |C:ResolveColorBlue |M:Marker 5 |D:1
+
+006  001      V     C        01:27:06:16 01:27:06:17 01:27:06:16 01:27:06:17
+Trace de colle en haut + peétouille en haut = A  reprendre |C:ResolveColorYellow |M:Marker 88 |D:125512
+
 007  001      V     C        01:04:55:22 01:04:55:23 01:04:55:22 01:04:55:23
 test 25:01 |C:ResolveColorYellow |M:Yellow Marker |D:601
-
-008  001      V     C        01:44:35:12 01:44:35:13 01:44:35:12 01:44:35:13  
- |C:ResolveColorBlue |M:Marker 130 |D:1
-
-009  001      V     C        01:21:45:04 01:21:45:05 01:21:45:04 01:21:45:05  
+
+008  001      V     C        01:44:35:12 01:44:35:13 01:44:35:12 01:44:35:13
+ |C:ResolveColorBlue |M:Marker 130 |D:1
+
+009  001      V     C        01:21:45:04 01:21:45:05 01:21:45:04 01:21:45:05
 Tache claire en haut a gauche et en bas
- |C:ResolveColorBlue |M:Marker 72 |D:1
-
+ |C:ResolveColorBlue |M:Marker 72 |D:1
+
 
 `;
 
     var rawExampleBad1 = `
-TITLE: ( no title )
-
-001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:09 01:00:18:10  
-Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
-
-002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21  
-Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
+TITLE: ( no title )
+
+001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:09 01:00:18:10
+Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
+
+002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21
+Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
 `;
 
+    var rawExampleWithFCM = `
+TITLE: LM_BOB101
+FCM: NON-DROP FRAME
+
+001  001      V     C        01:00:00:00 01:00:00:01 01:00:00:00 01:00:00:01
+ATTENTION PROBLEME DE RENDU COULEUR ET DEFAUT D'ENCODAGE DU LOGO SND |C:ResolveColorRed |M:ETALONAGE |D:362
+
+002  001      V     C        01:00:15:22 01:00:15:23 01:00:15:22 01:00:15:23
+Le carton n'est pas totalement horizontal, dans mon souvenir c'est comme cela a l'origine, mais cela vaut le coup de faire un pan pour qu'il soit droit |C:ResolveColorRed |M:ETALONAGE |D:695
+`;
 
 
      it("'s internal regex works", () => {
@@ -57,14 +67,23 @@ Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider
 
         expect(splitResult[1]).toMatch(/001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07\s+/);
         expect(splitResult[2]).toMatch(/Poil noire gauche cadre sur visage acteur \|C:ResolveColorYellow \|M:Marker 1 \|D:1\s+/);
-        expect(splitResult[splitResult.length-2]).toMatch(/^\s+Tache claire en haut a gauche et en bas/);
+        expect(splitResult[splitResult.length-2]).toMatch(/^Tache claire en haut a gauche et en bas[\s]+?\|C:ResolveColorBlue \|M:Marker 72 \|D:1/g);
         expect(splitResult[splitResult.length-3]).toMatch(/^009  001      V     C        01:21:45:04 01:21:45:05 01:21:45:04 01:21:45:05/);
 //        expect(rawExample.split(c_r_RESOLVE_MARKER_ENTRY)).toEqual([]);
     });
 
+
     function _rawResolveEDLMarkerToArrays(a,b){
         return () => EDLUtils_.rawResolveEDLMarkerToArrays(a,b);
     }
+
+
+    it("'s internal regex still works when FCM line is present", () => {
+
+         var splitResult = rawExampleWithFCM.split(EDLUtils_.regex.c_r_RESOLVE_MARKER_ENTRY);
+        expect(splitResult[1]).toMatch(/001  001      V     C        01:00:00:00 01:00:00:01 01:00:00:00 01:00:00:01\s+/);
+         var result = _rawResolveEDLMarkerToArrays(rawExampleWithFCM, 24)();
+    });
 
     function _PARSE_RESOLVE_MARKER_EDL(a,b) {
         return () => PARSE_RESOLVE_MARKER_EDL(a,b);
@@ -115,25 +134,25 @@ Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider
     });
 
     var rawExampleBad2 = `
-TITLE: ( no title )
-
-001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07  
-001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07  
-Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
-
-002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21  
-Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
+TITLE: ( no title )
+
+001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07
+001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07
+Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
+
+002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21
+Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
 `;
 
     var rawExampleBad3 = `
-TITLE: ( no title )
-
-001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07  
-Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
-
-002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21  
-Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
-Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
+TITLE: ( no title )
+
+001  001      V     C        01:00:18:06 01:00:18:07 01:00:18:06 01:00:18:07
+Poil noire gauche cadre sur visage acteur |C:ResolveColorYellow |M:Marker 1 |D:1
+
+002  001      V     C        01:00:20:20 01:00:20:21 01:00:20:20 01:00:20:21
+Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
+Son en avance de 2i sur les dialogues du 1er plan = Pour ex = synchro à valider en l'état |C:ResolveColorGreen |M:Marker 2 |D:1
 `;
 
     it("detects some bad formats", () => {

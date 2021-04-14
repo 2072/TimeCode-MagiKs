@@ -41,7 +41,7 @@
 /* jshint -W097 */
 "use strict";
 
-var TCM_VERSION = "v1.3a"; // can't be a const because of GAS strange limitation...
+var TCM_VERSION = "v1.4"; // can't be a const because of GAS strange limitation...
 
 // compat layer with NodeJS
 var Utilities = typeof Utilities === "undefined" ? {} : Utilities;
@@ -248,7 +248,7 @@ var EDLUtils_ = (function () {
     my.regex = [];
     const c_i_EVENTN = 0, c_i_SOURCE = 1, c_i_TRACK = 2, c_i_EVENTT = 3, c_i_SRCIN = 4, c_i_SRCOUT = 5, c_i_RECIN = 6, c_i_RECOUT = 7, c_i_M2SPEED = 8;
 
-    const c_r_HEADER      = /(^\w+:)\s*(.*$)/;
+    const c_r_HEADER      = /(^\w+:)\s*(.*$)/m;
     const c_r_STANDARD    = /\s+/;
     const c_r_RESOLVE_MARKER_ENTRY =
        /(\d+\s+?\d+\s+?V\s+?C\s+?\d\d:\d\d:\d\d:\d\d \d\d:\d\d:\d\d:\d\d \d\d:\d\d:\d\d:\d\d \d\d:\d\d:\d\d:\d\d\s+?)([\s\S]+?\|C:\S+? \|M:.*? \|D:\d+?\s+?)/g;
